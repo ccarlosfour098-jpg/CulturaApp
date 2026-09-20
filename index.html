@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CulturApp Popayán</title>
+
+    <link rel="stylesheet" href="../css/variable.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+
+<body>
+
+    <!-- ENCABEZADO -->
+    <header class="header">
+
+        <div class="logo">
+            <div class="logo-icono">🏛</div>
+
+            <div class="logo-texto">
+                <h2>CulturApp Popayán</h2>
+                <p>AGENDA CULTURAL & DEPORTIVA</p>
+            </div>
+        </div>
+
+        <nav class="menu">
+            <a href="index.html" class="activo">Explorar</a>
+            <a href="#">Agenda</a>
+            <a href="#">Favoritos</a>
+            <a href="gestionEventos.html">Gestión</a>
+        </nav>
+
+        <button class="btn-ingresar">
+            👤 Ingresar
+        </button>
+
+    </header>
+
+
+    <main class="contenedor">
+
+        <!-- PRESENTACIÓN -->
+        <section class="presentacion">
+
+            <span class="etiqueta">
+                📍 Popayán, Cauca
+            </span>
+
+            <span class="etiqueta">
+                🏛 Ciudad Blanca • Patrimonio & Universidad del Cauca
+            </span>
+
+            <h1>
+                Descubre lo que está pasando en Popayán
+            </h1>
+
+            <p>
+                La plataforma oficial para descubrir, consultar y agendar
+                eventos culturales, artísticos y deportivos en la Ciudad
+                Blanca de Colombia.
+            </p>
+
+            <br>
+
+            <p>
+                ✓ Eventos verificados por Secretaría de Cultura
+                &nbsp;&nbsp;&nbsp;
+                ✓ Acceso libre y comunitario
+            </p>
+
+        </section>
+
+
+        <!-- BUSCADOR -->
+        <section class="buscador">
+
+            <div class="buscador-principal">
+
+                <input
+                    type="text"
+                    class="input-busqueda"
+                    placeholder="🔍 Buscar actividad o colectivo (ej. Festival, bunde, chirimía, teatro...)">
+
+                <select class="select-sector">
+                    <option>Sector o claustro (Todos)</option>
+                    <option>Centro Histórico</option>
+                    <option>Universidad del Cauca</option>
+                    <option>Parque Caldas</option>
+                </select>
+
+                <button class="btn-explorar">
+                    Explorar agenda →
+                </button>
+
+            </div>
+
+
+            <div class="categorias">
+
+                <button class="categoria activa">Todas</button>
+                <button class="categoria">Música</button>
+                <button class="categoria">Teatro</button>
+                <button class="categoria">Arte</button>
+                <button class="categoria">Ferias & Tradición</button>
+                <button class="categoria">Deporte</button>
+                <button class="categoria">Literatura</button>
+
+            </div>
+
+
+            <div class="filtros">
+
+                <strong>Filtrar por:</strong>
+
+                <button class="filtro activo">Próximos</button>
+                <button class="filtro">Eventos Pasados</button>
+                <button class="filtro">Hoy</button>
+                <button class="filtro">Fin de semana</button>
+                <button class="filtro">✓ Gratis / Entrada Libre</button>
+
+            </div>
+
+        </section>
+
+
+        <!-- EVENTOS -->
+        <section>
+
+            <div class="titulo-seccion">
+
+                <h2>Próximos eventos en Popayán</h2>
+
+                <p>
+                    Mostrando 6 actividades culturales y formativas convocadas
+                </p>
+
+            </div>
+
+
+            <div class="eventos">
+
+
+                <!-- EVENTO 1 -->
+                <article class="tarjeta-evento">
+
+                    <img
+                        src="../img/evento1.jpg"
+                        alt="Festival de Chirimías"
+                        class="imagen-evento">
+
+                    <div class="informacion-evento">
+
+                        <div class="etiquetas">
+
+                            <span class="etiqueta-evento">
+                                Música Tradicional
+                            </span>
+
+                            <span class="etiqueta-gratis">
+                                Entrada Libre
+                            </span>
+
+                        </div>
+
+                        <p class="dato-evento">
+                            📅 18 Nov, 2024 • 6:30 PM
+                        </p>
+
+                        <h3>
+                            Festival de Chirimías y Música
+                            Tradicional del Gran Cauca
+                        </h3>
+
+                        <p class="dato-evento">
+                            📍 Parque Caldas (Centro Histórico)
+                        </p>
+
+                        <p class="dato-evento">
+                            👥 Alcaldía de Popayán & Red Cultural
+                        </p>
+
+                        <div class="pie-tarjeta">
+
+                            <span>● Visualizando Detalle</span>
+
+                            <button class="btn-detalles">
+                                Ver detalles
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+                <!-- EVENTO 2 -->
+                <article class="tarjeta-evento">
+
+                    <img
+                        src="../img/evento2.jpg"
+                        alt="Noche de galerías"
+                        class="imagen-evento">
+
+                    <div class="informacion-evento">
+
+                        <div class="etiquetas">
+
+                            <span class="etiqueta-evento">
+                                Artes Plásticas
+                            </span>
+
+                            <span class="etiqueta-gratis">
+                                $15.000 COP
+                            </span>
+
+                        </div>
+
+                        <p class="dato-evento">
+                            📅 22 Nov, 2024 • 7:00 PM
+                        </p>
+
+                        <h3>
+                            Noche de Galerías en el Claustro
+                            de Santo Domingo
+                        </h3>
+
+                        <p class="dato-evento">
+                            📍 Claustro de Santo Domingo
+                        </p>
+
+                        <p class="dato-evento">
+                            👥 Vicerrectoría de Cultura Unicauca
+                        </p>
+
+                        <div class="pie-tarjeta">
+
+                            <span>Cupos limitados</span>
+
+                            <button class="btn-detalles">
+                                Ver detalles
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+                <!-- EVENTO 3 -->
+                <article class="tarjeta-evento">
+
+                    <img
+                        src="../img/evento3.jpg"
+                        alt="Carrera Atlética"
+                        class="imagen-evento">
+
+                    <div class="informacion-evento">
+
+                        <div class="etiquetas">
+
+                            <span class="etiqueta-evento">
+                                Deporte Comunitario
+                            </span>
+
+                            <span class="etiqueta-gratis">
+                                Gratis
+                            </span>
+
+                        </div>
+
+                        <p class="dato-evento">
+                            📅 Por confirmar nueva fecha
+                        </p>
+
+                        <h3>
+                            Carrera Atlética 10K Nocturna
+                            Ciudad Blanca
+                        </h3>
+
+                        <p class="dato-evento">
+                            📍 Salida: Parque Caldas
+                        </p>
+
+                        <p class="dato-evento">
+                            👥 Secretaría de Deporte y Recreación
+                        </p>
+
+                        <div class="pie-tarjeta">
+
+                            <span>Aviso de reprogramación</span>
+
+                            <button class="btn-detalles">
+                                Ver detalles
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+                <!-- EVENTO 4 -->
+                <article class="tarjeta-evento">
+
+                    <img
+                        src="../img/evento4.jpg"
+                        alt="Obra teatral"
+                        class="imagen-evento">
+
+                    <div class="informacion-evento">
+
+                        <div class="etiquetas">
+
+                            <span class="etiqueta-evento">
+                                Teatro & Memoria
+                            </span>
+
+                            <span class="etiqueta-gratis">
+                                $20.000 COP
+                            </span>
+
+                        </div>
+
+                        <p class="dato-evento">
+                            📅 30 Nov, 2024 • 7:30 PM
+                        </p>
+
+                        <h3>
+                            Obra Teatral: Leyendas Vivas
+                            del Macizo y Valle de Pubenza
+                        </h3>
+
+                        <p class="dato-evento">
+                            📍 Teatro Municipal Guillermo Valencia
+                        </p>
+
+                        <p class="dato-evento">
+                            👥 Colectivo Escénico Semillas del Cauca
+                        </p>
+
+                        <div class="pie-tarjeta">
+
+                            <span>Boletería en taquilla</span>
+
+                            <button class="btn-detalles">
+                                Ver detalles
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- PIE DE PÁGINA -->
+    <footer class="footer">
+
+        <div>
+            <h2>🏛 CulturApp Popayán</h2>
+
+            <p>
+                © 2024 CulturApp Popayán.
+                Proyecto Académico y de Fomento Cultural Comunitario.
+            </p>
+
+            <p>
+                Diseñado y desarrollado por Estudiantes de Ingeniería de Sistemas.
+            </p>
+        </div>
+
+        <div class="footer-enlaces">
+            <a href="#">Secretaría de Cultura</a>
+            <a href="#">Universidad del Cauca</a>
+            <a href="#">Centro Histórico</a>
+            <a href="#">Patrimonio y Archivo</a>
+            <a href="#">Términos y Datos Abiertos</a>
+            <a href="#">Contacto</a>
+        </div>
+
+    </footer>
+
+</body>
+</html>
