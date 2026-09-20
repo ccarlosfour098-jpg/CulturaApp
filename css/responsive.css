@@ -1,0 +1,83 @@
+@media (max-width: 900px) {
+
+    .header {
+        height: auto;
+        padding: 15px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .menu {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .presentacion h1 {
+        font-size: 30px;
+    }
+
+    .buscador-principal {
+        flex-direction: column;
+    }
+
+    .btn-explorar {
+        padding: 13px;
+    }
+
+    .eventos {
+        grid-template-columns: 1fr;
+    }
+
+    .solicitud {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .solicitud img {
+        width: 100%;
+        height: 150px;
+    }
+
+    .acciones {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .footer {
+        flex-direction: column;
+    }
+}
+
+
+@media (max-width: 600px) {
+
+    .contenedor {
+        width: 92%;
+    }
+
+    .presentacion {
+        padding: 20px;
+    }
+
+    .presentacion h1 {
+        font-size: 26px;
+    }
+
+    .menu {
+        flex-wrap: wrap;
+    }
+
+    .solicitudes-titulo {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .tabs {
+        overflow-x: auto;
+        gap: 20px;
+    }
+
+}
