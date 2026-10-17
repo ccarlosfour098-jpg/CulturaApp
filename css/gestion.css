@@ -1,0 +1,183 @@
+
+/* =====================================
+   GESTIÓN DE EVENTOS
+===================================== */
+
+.panel-gestion {
+    margin-bottom: 28px;
+}
+
+#panelFormularioEvento {
+    margin: 25px 0;
+    padding: 28px;
+    background: #ffffff;
+    border: 1px solid #dce3ed;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(20, 35, 60, 0.06);
+}
+
+#panelFormularioEvento[hidden] {
+    display: none !important;
+}
+
+#panelFormularioEvento h2 {
+    margin: 0 0 8px;
+    color: #17233a;
+    font-size: 1.6rem;
+}
+
+#panelFormularioEvento > p {
+    margin-bottom: 24px;
+    color: #64748b;
+}
+
+#formularioEvento {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 22px;
+    align-items: start;
+}
+
+#formularioEvento label {
+    display: block;
+    margin-top: 8px;
+    color: #273449;
+    font-weight: 600;
+    font-size: 0.94rem;
+}
+
+#formularioEvento input,
+#formularioEvento textarea,
+#formularioEvento select {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    padding: 12px 13px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #172033;
+    font: inherit;
+}
+
+#formularioEvento input:focus,
+#formularioEvento textarea:focus,
+#formularioEvento select:focus {
+    outline: 3px solid rgba(37, 99, 235, 0.14);
+    border-color: #2563eb;
+}
+
+#formularioEvento textarea {
+    resize: vertical;
+    min-height: 110px;
+}
+
+#formularioEvento label[for="descripcionEvento"],
+#formularioEvento #descripcionEvento,
+#formularioEvento button,
+#mensajeFormularioEvento {
+    grid-column: 1 / -1;
+}
+
+#formularioEvento button {
+    width: fit-content;
+    min-width: 150px;
+    padding: 12px 20px;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600;
+}
+
+#formularioEvento button[type="submit"] {
+    background: #17233a;
+    color: #ffffff;
+}
+
+#formularioEvento button[type="submit"]:hover {
+    background: #263b58;
+}
+
+#btnCancelarFormulario {
+    background: #eef2f7;
+    color: #273449;
+}
+
+#btnMostrarFormulario {
+    padding: 11px 17px;
+    border: 1px solid #d5dce7;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #17233a;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600;
+}
+
+#btnMostrarFormulario:hover {
+    background: #eef4ff;
+    border-color: #9bbcff;
+}
+
+#listaEventos {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin: 24px 0 50px;
+}
+
+#listaEventos .solicitud {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 24px;
+    background: #ffffff;
+    border: 1px solid #e0e6ef;
+    border-radius: 14px;
+    box-shadow: 0 4px 15px rgba(20, 35, 60, 0.04);
+}
+
+#listaEventos .solicitud h3 {
+    margin: 12px 0;
+    color: #17233a;
+    font-size: 1.3rem;
+}
+
+#listaEventos .solicitud p {
+    margin: 8px 0;
+    line-height: 1.6;
+    color: #475569;
+}
+
+#mensajeEventos,
+#mensajeFormularioEvento {
+    color: #b42318;
+}
+
+@media (max-width: 650px) {
+    #panelFormularioEvento {
+        padding: 20px 16px;
+    }
+
+    #formularioEvento {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    #formularioEvento label,
+    #formularioEvento input,
+    #formularioEvento textarea,
+    #formularioEvento select,
+    #formularioEvento button,
+    #mensajeFormularioEvento {
+        grid-column: 1;
+    }
+
+    #formularioEvento button {
+        width: 100%;
+    }
+
+    #listaEventos .solicitud {
+        padding: 18px;
+    }
+}

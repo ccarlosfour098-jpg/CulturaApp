@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Inicia sesión en CulturaApp, tu agenda cultural de Popayán.">
+    <title>Iniciar sesión | CulturaApp</title>
+
+    <link rel="stylesheet" href="../css/variable.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/login.css">
+    
+</head>
+
+<body class="login-pagina">
+
+    <header class="login-barra">
+        <a href="../index.html" class="login-marca">
+            CulturaApp Popayán
+            <small>Agenda cultural y deportiva</small>
+        </a>
+
+        <a href="../index.html" class="login-volver">
+            ← Volver a explorar
+        </a>
+    </header>
+
+    <main class="login-contenedor">
+        <section class="login-tarjeta" aria-labelledby="tituloLogin">
+
+            <div class="login-insignia">
+                Acceso unificado · CulturaApp
+            </div>
+
+            <h1 id="tituloLogin">Bienvenido a CulturaApp</h1>
+
+            <p class="login-descripcion">
+                Ingresa para continuar disfrutando de la agenda cultural de Popayán.
+            </p>
+
+            <form id="formularioLogin" class="login-formulario">
+                <label for="correo">Correo electrónico</label>
+
+                <input
+                    class="login-campo"
+                    type="email"
+                    id="correo"
+                    name="correo"
+                    placeholder="ejemplo@correo.com"
+                    autocomplete="username"
+                    maxlength="150"
+                    required
+                >
+
+                <label for="contrasena">Contraseña</label>
+
+                <input
+                    class="login-campo"
+                    type="password"
+                    id="contrasena"
+                    name="contrasena"
+                    placeholder="Ingresa tu contraseña"
+                    autocomplete="current-password"
+                    required
+                >
+
+                <div class="login-opciones">
+                    <label class="login-recordar" for="recordar">
+                        <input type="checkbox" id="recordar" name="recordar">
+                        Recordarme en este equipo
+                    </label>
+
+                    <a class="login-enlace" href="recuperarContrasena.html">
+                        ¿Olvidaste tu contraseña?
+                    </a>
+                </div>
+
+                <button type="submit" class="login-boton" id="botonLogin">
+                    Iniciar sesión →
+                </button>
+
+                <p id="mensajeLogin" class="login-mensaje"
+                   role="status" aria-live="polite"></p>
+            </form>
+
+            <div class="login-separador" aria-hidden="true">o</div>
+
+            <p class="login-registro">
+                ¿No tienes cuenta?
+                <a class="login-enlace" href="registro.html">
+                    Regístrate gratis
+                </a>
+            </p>
+
+            <p class="login-explorar">
+                <a class="login-enlace" href="../index.html">
+                    ← Continuar explorando eventos sin iniciar sesión
+                </a>
+            </p>
+        </section>
+
+        <aside class="login-nota">
+            <strong>Nota para organizadores y gestores culturales</strong><br>
+            Los permisos para publicar y gestionar eventos se asignarán
+            según el rol autorizado de cada cuenta.
+        </aside>
+    </main>
+
+    <footer class="login-pie">
+        <strong>CulturaApp Popayán · Cauca, Colombia</strong>
+        <p>
+            Proyecto académico de agenda cultural y deportiva.
+            Consulta los eventos y actividades de la ciudad.
+        </p>
+    </footer>
+
+    <script src="../js/validaciones.js" defer></script>
+    <script src="../js/auth.js" defer></script>
+</body>
+</html>

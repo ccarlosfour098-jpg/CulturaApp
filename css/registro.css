@@ -1,0 +1,42 @@
+.registro-tarjeta {
+            max-width: 520px;
+        }
+
+        .registro-formulario {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+        }
+
+        .registro-formulario label {
+            margin-top: 9px;
+            font-weight: 600;
+            color: #202938;
+        }
+
+        .registro-formulario input {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd1dc;
+            border-radius: 10px;
+            font: inherit;
+        }
+
+        .registro-formulario input:focus {
+            outline: 3px solid rgba(37, 99, 235, .14);
+            border-color: #2563eb;
+        }
+
+        .registro-terminos {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            margin-top: 15px;
+            font-size: .86rem;
+            line-height: 1.5;
+        }
+
+        .registro-terminos input {
+            margin-top: 4px;
+        }
