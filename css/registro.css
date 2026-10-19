@@ -40,3 +40,153 @@
         .registro-terminos input {
             margin-top: 4px;
         }
+
+
+/* Selección del tipo de cuenta */
+.registro-tipo {
+    display: block;
+    width: 100%;
+    margin: 24px 0;
+}
+
+.registro-tipo h2,
+.registro-organizador h2 {
+    margin: 0 0 8px;
+    font-size: 1.2rem;
+    line-height: 1.4;
+}
+
+.registro-tipo > p,
+.registro-organizador > p {
+    margin: 0 0 16px;
+    line-height: 1.5;
+}
+
+.registro-tipo .registro-opcion {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    align-items: start;
+    gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px;
+    margin: 0 0 12px;
+    border: 1px solid #d9deea;
+    border-radius: 10px;
+    background: #fff;
+    cursor: pointer;
+}
+
+.registro-tipo .registro-opcion input[type="radio"] {
+    display: block;
+    width: 16px;
+    height: 16px;
+    margin: 3px 0 0;
+    padding: 0;
+}
+
+.registro-tipo .registro-opcion span {
+    display: block;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.registro-tipo .registro-opcion strong {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.98rem;
+    line-height: 1.4;
+}
+
+.registro-tipo .registro-opcion small {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #525b6b;
+}
+
+/* Campos adicionales del organizador */
+.registro-organizador {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 24px 0;
+    padding: 20px;
+    border: 1px solid #d9deea;
+    border-radius: 12px;
+    background: #f8faff;
+}
+
+.registro-organizador[hidden],
+#grupoNombreOrganizacion[hidden] {
+    display: none !important;
+}
+
+.registro-organizador label {
+    display: block;
+    width: 100%;
+    margin: 16px 0 7px;
+    font-weight: 600;
+}
+
+.registro-organizador input:not([type="radio"]),
+.registro-organizador select,
+.registro-organizador textarea {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 11px 12px;
+    border: 1px solid #cbd2df;
+    border-radius: 8px;
+    background: #fff;
+    font: inherit;
+}
+
+.registro-organizador textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+@media (max-width: 480px) {
+    .registro-tipo .registro-opcion {
+        padding: 12px;
+    }
+
+    .registro-organizador {
+        padding: 14px;
+    }
+}
+
+
+/* Términos y condiciones del registro */
+.registro-formulario .registro-terminos {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 20px 0;
+    padding: 0;
+    text-align: left;
+}
+
+.registro-formulario .registro-terminos input[type="checkbox"] {
+    flex: 0 0 17px;
+    width: 17px;
+    height: 17px;
+    margin: 3px 0 0;
+    padding: 0;
+}
+
+.registro-formulario .registro-terminos span {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    font-weight: 400;
+}

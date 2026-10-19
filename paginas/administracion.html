@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Administración | CulturaApp</title>
+
+    <link rel="stylesheet" href="../css/variable.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/administracion.css">
+</head>
+
+<body>
+    <div class="admin-layout">
+
+        <aside class="admin-sidebar">
+            <a href="../index.html" class="admin-logo">
+                <span class="admin-logo-icon">C</span>
+                <span>CulturaApp</span>
+            </a>
+
+            <p class="admin-menu-title">MENÚ PRINCIPAL</p>
+
+            <nav class="admin-nav">
+                <a href="#resumen" class="admin-nav-link active">
+                    <span>▦</span>
+                    Resumen
+                </a>
+
+                <a href="#solicitudes" class="admin-nav-link">
+                    <span>♧</span>
+                    Solicitudes de organizadores
+                    <span id="contadorSolicitudes" class="admin-badge">0</span>
+                </a>
+
+                <a href="#usuarios" class="admin-nav-link">
+                    <span>♙</span>
+                    Usuarios
+                </a>
+
+                <a href="#eventos" class="admin-nav-link">
+                    <span>▣</span>
+                    Eventos
+                </a>
+            </nav>
+
+            <button type="button" id="botonCerrarSesion"
+                    class="admin-logout">
+                Cerrar sesión
+            </button>
+        </aside>
+
+        <main class="admin-main">
+
+            <header class="admin-header">
+                <div>
+                    <p class="admin-eyebrow">PANEL DE CONTROL</p>
+                    <h1>Administración</h1>
+                    <p>Gestiona la actividad cultural de Popayán.</p>
+                </div>
+
+                <div class="admin-profile">
+                    <div class="admin-avatar">A</div>
+                    <div>
+                        <strong id="nombreAdministrador">
+                            Administrador
+                        </strong>
+                        <span>Administrador</span>
+                    </div>
+                </div>
+            </header>
+
+            <section id="resumen" class="admin-section">
+                <h2>Resumen general</h2>
+                <p class="admin-description">
+                    Consulta el estado actual de la plataforma.
+                </p>
+
+                <div class="admin-stats">
+                    <article class="admin-stat-card">
+                        <span>Solicitudes pendientes</span>
+                        <strong id="totalSolicitudes">—</strong>
+                        <small>Por revisar</small>
+                    </article>
+
+                    <article class="admin-stat-card">
+                        <span>Usuarios registrados</span>
+                        <strong id="totalUsuarios">—</strong>
+                        <small>Cuentas de CulturaApp</small>
+                    </article>
+
+                    <article class="admin-stat-card">
+                        <span>Eventos registrados</span>
+                        <strong id="totalEventos">—</strong>
+                        <small>Eventos de la plataforma</small>
+                    </article>
+                </div>
+            </section>
+
+            <section id="solicitudes" class="admin-section">
+                <div class="admin-section-heading">
+                    <div>
+                        <h2>Solicitudes de organizadores</h2>
+                        <p class="admin-description">
+                            Revisa las propuestas antes de otorgar permisos.
+                        </p>
+                    </div>
+
+                    <button type="button" id="botonActualizar"
+                            class="admin-button admin-button-secondary">
+                        Actualizar
+                    </button>
+                </div>
+
+                <div id="mensajeAdmin" class="admin-message"
+                     role="status" aria-live="polite"></div>
+
+                <div class="admin-table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Solicitante</th>
+                                <th>Tipo</th>
+                                <th>Actividad</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tablaSolicitudes">
+                            <tr>
+                                <td colspan="6">
+                                    Cargando solicitudes...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="usuarios" class="admin-section">
+                <h2>Usuarios</h2>
+                <p class="admin-description">
+                    En esta sección incorporaremos la gestión de cuentas.
+                </p>
+                <div class="admin-placeholder">
+                    Gestión de usuarios próximamente.
+                </div>
+            </section>
+
+            <section id="eventos" class="admin-section">
+                <h2>Eventos</h2>
+                <p class="admin-description">
+                    En esta sección incorporaremos la gestión administrativa
+                    de eventos.
+                </p>
+                <div class="admin-placeholder">
+                    Gestión de eventos próximamente.
+                </div>
+            </section>
+
+            <footer class="admin-footer">
+                CulturaApp · Administración de la plataforma cultural.
+            </footer>
+
+        </main>
+    </div>
+
+    <script src="../js/administracion.js"></script>
+</body>
+</html>

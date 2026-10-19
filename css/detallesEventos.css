@@ -1,0 +1,202 @@
+
+.detalle-contenedor {
+    max-width: 1000px;
+    margin: 35px auto;
+    padding: 0 24px 50px;
+}
+
+.volver {
+    display: inline-block;
+    margin-bottom: 24px;
+    color: #254b82;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.volver:hover {
+    text-decoration: underline;
+}
+
+.detalle-portada {
+    padding: 32px;
+    margin-bottom: 28px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    box-shadow: 0 8px 28px rgba(15, 23, 42, 0.06);
+}
+
+.detalle-portada h1 {
+    margin: 12px 0;
+    color: #17233c;
+    font-size: clamp(1.8rem, 4vw, 2.7rem);
+    line-height: 1.2;
+}
+
+.detalle-portada .dato-evento {
+    margin: 10px 0;
+    color: #526079;
+    line-height: 1.6;
+}
+
+.precio-evento {
+    display: inline-block;
+    padding: 9px 14px;
+    margin: 12px 0;
+    color: #166534;
+    background: #dcfce7;
+    border-radius: 10px;
+    font-weight: 700;
+}
+
+#descripcionEvento {
+    margin-top: 18px;
+    color: #39465c;
+    line-height: 1.8;
+}
+
+.resenas-seccion {
+    padding: 28px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    box-shadow: 0 8px 28px rgba(15, 23, 42, 0.05);
+}
+
+.resenas-seccion h2 {
+    margin-top: 0;
+    color: #17233c;
+    font-size: 1.7rem;
+}
+
+.resumen-resenas {
+    padding: 20px;
+    margin: 20px 0;
+    background: #f1f5fb;
+    border-radius: 14px;
+}
+
+#promedioResenas {
+    display: block;
+    color: #17233c;
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+#estrellasPromedio,
+.estrellas-resena {
+    color: #e5a000;
+    font-size: 1.35rem;
+    letter-spacing: 3px;
+}
+
+#totalResenas {
+    margin-bottom: 0;
+    color: #526079;
+}
+
+.lista-resenas {
+    display: grid;
+    gap: 16px;
+    margin: 22px 0 32px;
+}
+
+.tarjeta-resena {
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    overflow-wrap: anywhere;
+}
+
+.tarjeta-resena h4 {
+    margin: 0;
+    color: #17233c;
+    font-size: 1rem;
+}
+
+.tarjeta-resena p {
+    line-height: 1.7;
+}
+
+.tarjeta-resena small {
+    color: #64748b;
+}
+
+.formulario-resena {
+    display: grid;
+    gap: 12px;
+    padding-top: 24px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.formulario-resena h3 {
+    margin: 0 0 8px;
+    color: #17233c;
+    font-size: 1.3rem;
+}
+
+.formulario-resena label {
+    color: #334155;
+    font-weight: 600;
+}
+
+.formulario-resena select,
+.formulario-resena textarea {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #17233c;
+    font: inherit;
+}
+
+.formulario-resena textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.formulario-resena select:focus,
+.formulario-resena textarea:focus {
+    outline: 2px solid #93c5fd;
+    border-color: #2563eb;
+}
+
+.formulario-resena .btn-explorar {
+    justify-self: start;
+    padding: 13px 24px;
+    border: none;
+    border-radius: 10px;
+    background: #1d5fd0;
+    color: #ffffff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.formulario-resena .btn-explorar:hover {
+    background: #174ca9;
+}
+
+#mensajeFormulario,
+#mensajeResenas,
+#estadoEvento {
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+    .detalle-contenedor {
+        padding: 0 14px 30px;
+        margin-top: 20px;
+    }
+
+    .detalle-portada,
+    .resenas-seccion {
+        padding: 20px;
+        border-radius: 14px;
+    }
+
+    .formulario-resena .btn-explorar {
+        width: 100%;
+    }
+}

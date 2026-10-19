@@ -5,9 +5,16 @@ const express = require("express");
 const session = require("express-session");
 const bcrypt = require("bcryptjs");
 const db = require("./config/db");
+const { GoogleGenAI } = require("@google/genai");
+
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+const genAI = new GoogleGenAI({
+    apiKey: process.env.GEMINI_API_KEY
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -703,22 +710,339 @@ app.patch("/api/eventos/:id/cancelar", async (req, res) => {
 });
 
 
-app.listen(PORT, () => {
-    console.log(`CulturaApp disponible en http://localhost:${PORT}`);
+/* =========================================
+    RESEÑAS Y CALIFICACIONES
+========================================= */
+
+// Consultar reseñas y promedio de un evento
+app.get("/api/eventos/:id/resenas", async (req, res) => {
+    const idEvento = Number(req.params.id);
+
+    if (!Number.isInteger(idEvento) || idEvento <= 0) {
+        return res.status(400).json({
+            mensaje: "El código del evento no es válido."
+        });
+    }
+
+    try {
+        const [eventos] = await db.execute(
+            `SELECT id_evento
+             FROM eventos
+             WHERE id_evento = ?`,
+            [idEvento]
+        );
+
+        if (eventos.length === 0) {
+            return res.status(404).json({
+                mensaje: "El evento no existe."
+            });
+        }
+
+        const [resenas] = await db.execute(
+            `SELECT
+                r.id_resena,
+                r.id_usuario,
+                r.id_evento,
+                r.calificacion,
+                r.comentario,
+                r.fecha_resena,
+                u.nombre_usuario,
+                u.apellido_usuario
+             FROM resenas r
+             INNER JOIN usuarios u
+                ON r.id_usuario = u.id_usuario
+             WHERE r.id_evento = ?
+             ORDER BY r.fecha_resena DESC`,
+            [idEvento]
+        );
+
+        const [resumen] = await db.execute(
+            `SELECT
+                COUNT(*) AS total_resenas,
+                ROUND(AVG(calificacion), 1) AS promedio
+             FROM resenas
+             WHERE id_evento = ?`,
+            [idEvento]
+        );
+
+        return res.json({
+            evento: idEvento,
+            total_resenas: Number(resumen[0].total_resenas),
+            promedio: resumen[0].promedio === null
+                ? null
+                : Number(resumen[0].promedio),
+            resenas
+        });
+
+    } catch (error) {
+        console.error(
+            "Error al consultar reseñas:",
+            error.code || error.message
+        );
+
+        return res.status(500).json({
+            mensaje: "No fue posible consultar las reseñas."
+        });
+    }
 });
 
 
+// Publicar una reseña
+app.post("/api/eventos/:id/resenas", async (req, res) => {
+    const usuario = req.session?.usuario;
+    const idEvento = Number(req.params.id);
+    const { calificacion, comentario } = req.body;
+
+    if (!usuario) {
+        return res.status(401).json({
+            mensaje: "Inicia sesión para publicar una reseña."
+        });
+    }
+
+    if (!Number.isInteger(idEvento) || idEvento <= 0) {
+        return res.status(400).json({
+            mensaje: "El código del evento no es válido."
+        });
+    }
+
+    const puntuacion = Number(calificacion);
+
+    if (
+        !Number.isInteger(puntuacion) ||
+        puntuacion < 1 ||
+        puntuacion > 5
+    ) {
+        return res.status(400).json({
+            mensaje: "La calificación debe estar entre 1 y 5."
+        });
+    }
+
+    if (
+        typeof comentario !== "string" ||
+        !comentario.trim() ||
+        comentario.trim().length > 2000
+    ) {
+        return res.status(400).json({
+            mensaje: "Escribe un comentario de máximo 2000 caracteres."
+        });
+    }
+
+    try {
+        const [eventos] = await db.execute(
+            `SELECT id_evento
+             FROM eventos
+             WHERE id_evento = ?`,
+            [idEvento]
+        );
+
+        if (eventos.length === 0) {
+            return res.status(404).json({
+                mensaje: "El evento no existe."
+            });
+        }
+
+        await db.execute(
+            `INSERT INTO resenas
+                (id_usuario, id_evento, calificacion, comentario)
+             VALUES (?, ?, ?, ?)`,
+            [
+                usuario.id,
+                idEvento,
+                puntuacion,
+                comentario.trim()
+            ]
+        );
+
+        return res.status(201).json({
+            mensaje: "Tu reseña se publicó correctamente."
+        });
+
+    } catch (error) {
+        if (error.code === "ER_DUP_ENTRY") {
+            return res.status(409).json({
+                mensaje: "Ya publicaste una reseña para este evento."
+            });
+        }
+
+        console.error(
+            "Error al publicar reseña:",
+            error.code || error.message
+        );
+
+        return res.status(500).json({
+            mensaje: "No fue posible publicar tu reseña."
+        });
+    }
+});
+
+
+/* =========================================
+    ANÁLISIS DE RESEÑAS CON GEMINI
+========================================= */
+
+app.post("/api/eventos/:id/analizar-resenas", async (req, res) => {
+    const usuario = req.session?.usuario;
+    const idEvento = Number(req.params.id);
+
+    // 1. Verificar que el usuario inició sesión
+    if (!usuario) {
+        return res.status(401).json({
+            mensaje: "Debes iniciar sesión para analizar las reseñas."
+        });
+    }
+
+    // 2. Validar el identificador del evento
+    if (!Number.isInteger(idEvento) || idEvento <= 0) {
+        return res.status(400).json({
+            mensaje: "El código del evento no es válido."
+        });
+    }
+
+    try {
+        // 3. Consultar el evento y verificar sus permisos
+        const [eventos] = await db.execute(
+            `SELECT id_evento, nombre_evento, id_usuario
+             FROM eventos
+             WHERE id_evento = ?`,
+            [idEvento]
+        );
+
+        if (eventos.length === 0) {
+            return res.status(404).json({
+                mensaje: "El evento no existe."
+            });
+        }
+
+        const evento = eventos[0];
+
+        const esAdministrador = [
+            "Administrador",
+            "Admin"
+        ].includes(usuario.rol);
+
+        const esPropietario =
+            Number(evento.id_usuario) === Number(usuario.id);
+
+        if (!esAdministrador && !esPropietario) {
+            return res.status(403).json({
+                mensaje: "No tienes permiso para analizar este evento."
+            });
+        }
+
+        // 4. Consultar las reseñas de MySQL
+        const [resenas] = await db.execute(
+            `SELECT calificacion, comentario
+             FROM resenas
+             WHERE id_evento = ?
+             ORDER BY fecha_resena DESC
+             LIMIT 100`,
+            [idEvento]
+        );
+
+        if (resenas.length < 3) {
+            return res.status(400).json({
+                mensaje: "Se necesitan al menos 3 reseñas para generar un análisis inicial.",
+                total_resenas: resenas.length
+            });
+        }
+
+        // 5. Preparar los comentarios sin datos personales
+        const comentarios = resenas.map((resena, indice) => ({
+            numero: indice + 1,
+            calificacion: Number(resena.calificacion),
+            comentario: resena.comentario
+        }));
+
+        // 6. Solicitar el análisis a Gemini
+        const respuesta = await genAI.models.generateContent({
+            model: "gemini-3.8-flash",
+            contents: `
+Analiza las siguientes reseñas de un evento cultural.
+
+Nombre del evento: ${evento.nombre_evento}
+Cantidad de reseñas analizadas: ${comentarios.length}
+
+Reseñas:
+${JSON.stringify(comentarios)}
+
+Devuelve un informe en español con estas secciones:
+1. sentimiento_general: positivo, neutro o negativo.
+2. puntuacion_percepcion: número entero de 1 a 10.
+3. fortalezas: lista de aspectos positivos mencionados.
+4. mejoras: lista de aspectos que deberían mejorarse.
+5. recomendaciones: lista de acciones concretas para el organizador.
+6. resumen: explicación breve del resultado.
+
+La puntuación de percepción es una estimación orientativa.
+Distingue las calificaciones numéricas de las opiniones escritas.
+No inventes información que no aparezca en las reseñas.
+Devuelve exclusivamente un objeto JSON válido.
+`
+        });
+
+        // 7. Interpretar el informe generado
+        const texto = respuesta.text;
+
+        if (!texto) {
+            throw new Error("Gemini no devolvió contenido.");
+        }
+
+        const textoLimpio = texto
+            .replace(/^```json\s*/i, "")
+            .replace(/^```\s*/i, "")
+            .replace(/\s*```$/, "")
+            .trim();
+
+        const informe = JSON.parse(textoLimpio);
+
+        // 8. Responder al frontend
+        return res.json({
+            evento: evento.nombre_evento,
+            total_resenas: comentarios.length,
+            informe
+        });
+
+    } catch (error) {
+        console.error(
+            "Error en análisis con Gemini:",
+            error.message
+        );
+
+        return res.status(500).json({
+            mensaje: "No fue posible generar el análisis de reseñas."
+        });
+    }
+});
+
+/* =========================================
+   REGISTRO DE CLIENTES Y ORGANIZADORES
+========================================= */
+
 app.post("/api/auth/registro", async (req, res) => {
+    let conexion;
+    let transaccionIniciada = false;
+
     try {
         const {
             nombre,
             apellido,
             correo,
             contrasena,
-            confirmarContrasena
+            confirmarContrasena,
+            tipoRegistro = "cliente",
+            tipoOrganizadorDetalle,
+            nombreOrganizacion,
+            tipoActividades,
+            descripcionOrganizador
         } = req.body;
 
-        // Validar campos obligatorios
+        console.log("=== PRUEBA DE REGISTRO ===");
+console.log("Correo:", correo);
+console.log("Tipo recibido:", tipoRegistro);
+console.log("Tipo de organizador:", tipoOrganizadorDetalle);
+console.log("Actividad:", tipoActividades);
+
+        // 1. Validar los datos personales
         if (
             typeof nombre !== "string" ||
             typeof apellido !== "string" ||
@@ -742,7 +1066,7 @@ app.post("/api/auth/registro", async (req, res) => {
             !contrasena
         ) {
             return res.status(400).json({
-                mensaje: "Todos los campos son obligatorios."
+                mensaje: "Todos los campos personales son obligatorios."
             });
         }
 
@@ -762,15 +1086,12 @@ app.post("/api/auth/registro", async (req, res) => {
             });
         }
 
-        if (contrasena.length < 8) {
+        if (
+            contrasena.length < 8 ||
+            Buffer.byteLength(contrasena, "utf8") > 72
+        ) {
             return res.status(400).json({
-                mensaje: "La contraseña debe tener al menos 8 caracteres."
-            });
-        }
-
-        if (Buffer.byteLength(contrasena, "utf8") > 72) {
-            return res.status(400).json({
-                mensaje: "La contraseña es demasiado larga."
+                mensaje: "La contraseña debe tener entre 8 caracteres y el límite permitido."
             });
         }
 
@@ -780,64 +1101,563 @@ app.post("/api/auth/registro", async (req, res) => {
             });
         }
 
-        // Verificar que el correo no esté registrado
-        const [usuariosExistentes] = await db.execute(
-            "SELECT id_usuario FROM usuarios WHERE correo_electronico = ?",
+        // 2. Validar el tipo de registro solicitado
+        if (!["cliente", "organizador"].includes(tipoRegistro)) {
+            return res.status(400).json({
+                mensaje: "El tipo de registro seleccionado no es válido."
+            });
+        }
+
+        let tipoOrganizador = null;
+        let organizacionLimpia = null;
+        let actividadesLimpias = null;
+        let descripcionLimpia = null;
+
+        // 3. Validar los datos adicionales del organizador
+        if (tipoRegistro === "organizador") {
+            const tiposPermitidos = [
+                "individual",
+                "organizacion",
+                "colectivo"
+            ];
+
+            const actividadesPermitidas = [
+                "musica",
+                "teatro",
+                "danza",
+                "artes",
+                "deporte",
+                "ferias",
+                "otras"
+            ];
+
+            if (
+                typeof tipoOrganizadorDetalle !== "string" ||
+                !tiposPermitidos.includes(tipoOrganizadorDetalle)
+            ) {
+                return res.status(400).json({
+                    mensaje: "Selecciona cómo organizas tus actividades."
+                });
+            }
+
+            if (
+                typeof tipoActividades !== "string" ||
+                !actividadesPermitidas.includes(tipoActividades)
+            ) {
+                return res.status(400).json({
+                    mensaje: "Selecciona el tipo de actividades que organizas."
+                });
+            }
+
+            if (
+                typeof descripcionOrganizador !== "string" ||
+                !descripcionOrganizador.trim() ||
+                descripcionOrganizador.trim().length > 1000
+            ) {
+                return res.status(400).json({
+                    mensaje: "Describe tus actividades en un máximo de 1000 caracteres."
+                });
+            }
+
+            tipoOrganizador = tipoOrganizadorDetalle;
+            actividadesLimpias = tipoActividades;
+            descripcionLimpia = descripcionOrganizador.trim();
+
+            if (tipoOrganizador !== "individual") {
+                if (
+                    typeof nombreOrganizacion !== "string" ||
+                    !nombreOrganizacion.trim() ||
+                    nombreOrganizacion.trim().length > 150
+                ) {
+                    return res.status(400).json({
+                        mensaje: "Escribe el nombre de la organización o colectivo."
+                    });
+                }
+
+                organizacionLimpia = nombreOrganizacion.trim();
+            }
+        }
+
+        // 4. Preparar contraseña y conexión a MySQL
+        const hash = await bcrypt.hash(contrasena, 12);
+
+        conexion = await db.getConnection();
+        await conexion.beginTransaction();
+        transaccionIniciada = true;
+
+        // 5. Comprobar que el correo no esté registrado
+        const [usuariosExistentes] = await conexion.execute(
+            `SELECT id_usuario
+             FROM usuarios
+             WHERE correo_electronico = ?
+             LIMIT 1`,
             [correoLimpio]
         );
 
         if (usuariosExistentes.length > 0) {
+            await conexion.rollback();
+            transaccionIniciada = false;
+
             return res.status(409).json({
                 mensaje: "Este correo ya está registrado."
             });
         }
 
-        // Buscar el rol Cliente desde la base de datos
-        const [roles] = await db.execute(
-            "SELECT id_rol FROM roles WHERE nombre_rol = ?",
+        // 6. Obtener siempre el rol Cliente para el registro público
+        const [roles] = await conexion.execute(
+            `SELECT id_rol
+             FROM roles
+             WHERE nombre_rol = ?
+             LIMIT 1`,
             ["Cliente"]
         );
 
         if (roles.length === 0) {
+            await conexion.rollback();
+            transaccionIniciada = false;
+
             return res.status(500).json({
-                mensaje: "No se encontró el rol de cliente."
+                mensaje: "No se encontró el rol de cliente en la base de datos."
             });
         }
 
-        // Nunca guardar la contraseña original
-        const hash = await bcrypt.hash(contrasena, 12);
+        
+        // 7. Crear la cuenta según el tipo de registro
+        // Los clientes quedan activos; los organizadores esperan aprobación.
+        const estadoInicial = tipoRegistro === "organizador"
+            ? "Pendiente"
+            : "Activo";
 
-        // Crear la cuenta como pendiente de activación
-        await db.execute(
-            `INSERT INTO usuarios
-            (nombre_usuario, apellido_usuario, correo_electronico,
-            contrasena, telefono, id_rol, estado)
-            VALUES (?, ?, ?, ?, NULL, ?, 'Pendiente')`,
+        const [resultadoUsuario] = await conexion.execute(
+            `INSERT INTO usuarios (
+                nombre_usuario,
+                apellido_usuario,
+                correo_electronico,
+                contrasena,
+                telefono,
+                id_rol,
+                estado
+            )
+            VALUES (?, ?, ?, ?, NULL, ?, ?)`,
             [
                 nombreLimpio,
                 apellidoLimpio,
                 correoLimpio,
                 hash,
-                roles[0].id_rol
+                roles[0].id_rol,
+                estadoInicial
             ]
         );
 
-        return res.status(201).json({
-            mensaje: "Cuenta creada. Está pendiente de activación."
-        });
+        const idUsuario = resultadoUsuario.insertId;
 
-    } catch (error) {
-        if (error.code === "ER_DUP_ENTRY") {
-            return res.status(409).json({
-                mensaje: "Este correo ya está registrado."
+        // 8. Si es organizador, registrar su solicitud pendiente
+        if (tipoRegistro === "organizador") {
+            await conexion.execute(
+                `INSERT INTO solicitudes_organizadores (
+                    id_usuario,
+                    tipo_organizador,
+                    nombre_organizacion,
+                    tipo_actividades,
+                    descripcion,
+                    estado
+                )
+                VALUES (?, ?, ?, ?, ?, 'Pendiente')`,
+                [
+                    idUsuario,
+                    tipoOrganizador,
+                    organizacionLimpia,
+                    actividadesLimpias,
+                    descripcionLimpia
+                ]
+            );
+        }
+
+        // 9. Confirmar las operaciones
+        await conexion.commit();
+        transaccionIniciada = false;
+
+        if (tipoRegistro === "organizador") {
+            return res.status(201).json({
+                mensaje: "Tu cuenta y solicitud de organizador fueron registradas. El administrador debe revisar tu solicitud antes de activar tu cuenta."
             });
         }
 
-        console.error("Error en registro:", error.code || error.message);
+        return res.status(201).json({
+            mensaje: "¡Cuenta creada correctamente! Ya puedes iniciar sesión en CulturaApp."
+        });
+
+    } catch (error) {
+        if (conexion && transaccionIniciada) {
+            try {
+                await conexion.rollback();
+            } catch (errorRollback) {
+                console.error(
+                    "Error al revertir el registro:",
+                    errorRollback.code || errorRollback.message
+                );
+            }
+        }
+
+        if (error.code === "ER_DUP_ENTRY") {
+            return res.status(409).json({
+                mensaje: "Este correo o solicitud ya está registrado."
+            });
+        }
+
+        console.error(
+            "Error en registro:",
+            error.code || error.message
+        );
 
         return res.status(500).json({
-            mensaje: "No fue posible crear la cuenta."
+            mensaje: "No fue posible completar el registro."
         });
+
+    } finally {
+        if (conexion) {
+            conexion.release();
+        }
     }
 });
 
+
+/* ==========================================
+    PANEL DE ADMINISTRACIÓN
+========================================== */
+
+// Middleware: verificar que el usuario sea administrador
+function verificarAdministrador(req, res, next) {
+    const usuario = req.session?.usuario;
+
+    if (!usuario) {
+        return res.status(401).json({
+            mensaje: "Debes iniciar sesión para acceder."
+        });
+    }
+
+    if (usuario.rol !== "Administrador") {
+        return res.status(403).json({
+            mensaje: "No tienes permisos de administrador."
+        });
+    }
+
+    next();
+}
+
+// ==========================================
+// CONSULTAR SOLICITUDES DE ORGANIZADORES
+// ==========================================
+
+app.get(
+    "/api/admin/solicitudes-organizadores",
+    verificarAdministrador,
+    async (req, res) => {
+        try {
+            const [solicitudes] = await db.execute(`
+                SELECT
+                    s.id_solicitud,
+                    s.id_usuario,
+                    s.tipo_organizador,
+                    s.nombre_organizacion,
+                    s.tipo_actividades,
+                    s.descripcion,
+                    s.estado,
+                    s.fecha_solicitud,
+                    u.nombre_usuario,
+                    u.apellido_usuario,
+                    u.correo_electronico
+                FROM solicitudes_organizadores s
+                INNER JOIN usuarios u
+                    ON s.id_usuario = u.id_usuario
+                ORDER BY
+                    CASE
+                        WHEN s.estado = 'Pendiente' THEN 0
+                        ELSE 1
+                    END,
+                    s.fecha_solicitud DESC
+            `);
+
+            return res.json(solicitudes);
+
+        } catch (error) {
+            console.error(
+                "Error al consultar solicitudes:",
+                error.code || error.message
+            );
+
+            return res.status(500).json({
+                mensaje: "No fue posible consultar las solicitudes."
+            });
+        }
+    }
+);
+
+// ==========================================
+// CONSULTAR ESTADÍSTICAS DEL PANEL
+// ==========================================
+
+app.get(
+    "/api/admin/estadisticas",
+    verificarAdministrador,
+    async (req, res) => {
+        try {
+            const [usuarios] = await db.execute(`
+                SELECT COUNT(*) AS total
+                FROM usuarios
+            `);
+
+            const [eventos] = await db.execute(`
+                SELECT COUNT(*) AS total
+                FROM eventos
+            `);
+
+            const [solicitudes] = await db.execute(`
+                SELECT COUNT(*) AS total
+                FROM solicitudes_organizadores
+                WHERE estado = 'Pendiente'
+            `);
+
+            return res.json({
+                totalUsuarios: Number(usuarios[0].total),
+                totalEventos: Number(eventos[0].total),
+                totalSolicitudes: Number(solicitudes[0].total)
+            });
+
+        } catch (error) {
+            console.error(
+                "Error al consultar estadísticas:",
+                error.code || error.message
+            );
+
+            return res.status(500).json({
+                mensaje: "No fue posible consultar las estadísticas."
+            });
+        }
+    }
+);
+
+
+/* APROBAR SOLICITUD DE ORGANIZADOR */
+app.post(
+    "/api/admin/solicitudes-organizadores/:id/aprobar",
+    verificarAdministrador,
+    async (req, res) => {
+        const idSolicitud = Number(req.params.id);
+        const idAdministrador = req.session.usuario.id;
+
+        if (!Number.isInteger(idSolicitud) || idSolicitud <= 0) {
+            return res.status(400).json({
+                mensaje: "El identificador de la solicitud no es válido."
+            });
+        }
+
+        let conexion;
+
+        try {
+            conexion = await db.getConnection();
+            await conexion.beginTransaction();
+
+            const [solicitudes] = await conexion.execute(
+                `SELECT id_solicitud, id_usuario, estado
+                 FROM solicitudes_organizadores
+                 WHERE id_solicitud = ?
+                 FOR UPDATE`,
+                [idSolicitud]
+            );
+
+            if (solicitudes.length === 0) {
+                await conexion.rollback();
+                return res.status(404).json({
+                    mensaje: "La solicitud no existe."
+                });
+            }
+
+            const solicitud = solicitudes[0];
+
+            if (solicitud.estado !== "Pendiente") {
+                await conexion.rollback();
+                return res.status(409).json({
+                    mensaje: "Esta solicitud ya fue revisada."
+                });
+            }
+
+            const [roles] = await conexion.execute(
+                "SELECT id_rol FROM roles WHERE nombre_rol = ?",
+                ["Organizador"]
+            );
+
+            if (roles.length === 0) {
+                throw new Error("No existe el rol Organizador en la base de datos.");
+            }
+
+            await conexion.execute(
+                `UPDATE usuarios
+                 SET id_rol = ?, estado = 'Activo'
+                 WHERE id_usuario = ?`,
+                [roles[0].id_rol, solicitud.id_usuario]
+            );
+
+            await conexion.execute(
+                `UPDATE solicitudes_organizadores
+                 SET estado = 'Aprobada',
+                     fecha_revision = CURRENT_TIMESTAMP,
+                     revisado_por = ?
+                 WHERE id_solicitud = ?`,
+                [idAdministrador, idSolicitud]
+            );
+
+            await conexion.commit();
+
+            return res.json({
+                mensaje: "Solicitud aprobada. El usuario ya es organizador."
+            });
+        } catch (error) {
+            if (conexion) await conexion.rollback();
+            console.error("Error al aprobar solicitud:", error);
+
+            return res.status(500).json({
+                mensaje: "No fue posible aprobar la solicitud."
+            });
+        } finally {
+            if (conexion) conexion.release();
+        }
+    }
+);
+
+/* RECHAZAR SOLICITUD DE ORGANIZADOR */
+app.post(
+    "/api/admin/solicitudes-organizadores/:id/rechazar",
+    verificarAdministrador,
+    async (req, res) => {
+        const idSolicitud = Number(req.params.id);
+        const idAdministrador = req.session.usuario.id;
+
+        if (!Number.isInteger(idSolicitud) || idSolicitud <= 0) {
+            return res.status(400).json({
+                mensaje: "El identificador de la solicitud no es válido."
+            });
+        }
+
+        let conexion;
+
+        try {
+            conexion = await db.getConnection();
+            await conexion.beginTransaction();
+
+            const [solicitudes] = await conexion.execute(
+                `SELECT id_solicitud, id_usuario, estado
+                 FROM solicitudes_organizadores
+                 WHERE id_solicitud = ?
+                 FOR UPDATE`,
+                [idSolicitud]
+            );
+
+            if (solicitudes.length === 0) {
+                await conexion.rollback();
+                return res.status(404).json({
+                    mensaje: "La solicitud no existe."
+                });
+            }
+
+            const solicitud = solicitudes[0];
+
+            if (solicitud.estado !== "Pendiente") {
+                await conexion.rollback();
+                return res.status(409).json({
+                    mensaje: "Esta solicitud ya fue revisada."
+                });
+            }
+
+            await conexion.execute(
+                `UPDATE solicitudes_organizadores
+                 SET estado = 'Rechazada',
+                     fecha_revision = CURRENT_TIMESTAMP,
+                     revisado_por = ?
+                 WHERE id_solicitud = ?`,
+                [idAdministrador, idSolicitud]
+            );
+
+            // El usuario puede seguir utilizando CulturaApp como cliente.
+            await conexion.execute(
+                `UPDATE usuarios
+                 SET estado = 'Activo'
+                 WHERE id_usuario = ? AND id_rol = (
+                     SELECT id_rol FROM roles WHERE nombre_rol = 'Cliente'
+                 )`,
+                [solicitud.id_usuario]
+            );
+
+            await conexion.commit();
+
+            return res.json({
+                mensaje: "Solicitud rechazada. La cuenta continúa como cliente."
+            });
+        } catch (error) {
+            if (conexion) await conexion.rollback();
+            console.error("Error al rechazar solicitud:", error);
+
+            return res.status(500).json({
+                mensaje: "No fue posible rechazar la solicitud."
+            });
+        } finally {
+            if (conexion) conexion.release();
+        }
+    }
+);
+
+
+/* ==========================================
+   CONSULTAR TODOS LOS USUARIOS
+========================================== */
+
+app.get(
+    "/api/admin/usuarios",
+    verificarAdministrador,
+    async (req, res) => {
+        try {
+            const [usuarios] = await db.execute(`
+                SELECT
+                    u.id_usuario,
+                    u.nombre_usuario,
+                    u.apellido_usuario,
+                    u.correo_electronico,
+                    u.estado,
+                    u.fecha_registro,
+                    r.nombre_rol AS rol,
+                    s.estado AS estado_solicitud
+                FROM usuarios u
+                INNER JOIN roles r
+                    ON u.id_rol = r.id_rol
+                LEFT JOIN solicitudes_organizadores s
+                    ON s.id_usuario = u.id_usuario
+                ORDER BY
+                    CASE r.nombre_rol
+                        WHEN 'Administrador' THEN 1
+                        WHEN 'Organizador' THEN 2
+                        WHEN 'Cliente' THEN 3
+                        ELSE 4
+                    END,
+                    u.fecha_registro DESC
+            `);
+
+            return res.json(usuarios);
+
+        } catch (error) {
+            console.error(
+                "Error al consultar usuarios:",
+                error.code || error.message
+            );
+
+            return res.status(500).json({
+                mensaje: "No fue posible consultar los usuarios."
+            });
+        }
+    }
+);
+
+
+
+app.listen(PORT, () => {
+    console.log(`CulturaApp disponible en http://localhost:${PORT}`);
+});

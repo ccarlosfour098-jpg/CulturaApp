@@ -37,6 +37,49 @@ document.addEventListener("DOMContentLoaded", () => {
     const contador = document.getElementById("contadorEventos");
     const mensaje = document.getElementById("mensajeEventos");
 
+    
+    // Referencias de la ventana flotante de análisis
+    const modalAnalisis = document.getElementById("modalAnalisisResenas");
+    const contenidoModal = document.getElementById("contenidoModalAnalisis");
+    const tituloModal = document.getElementById("tituloModalAnalisis");
+    const subtituloModal = document.getElementById("subtituloModalAnalisis");
+    const btnCerrarModal = document.getElementById("cerrarModalAnalisis");
+
+    let elementoAnteriorModal = null;
+
+    function abrirModalAnalisis() {
+        elementoAnteriorModal = document.activeElement;
+        modalAnalisis.hidden = false;
+        modalAnalisis.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+        btnCerrarModal.focus();
+    }
+
+    function cerrarModalAnalisis() {
+        modalAnalisis.hidden = true;
+        modalAnalisis.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+
+        if (elementoAnteriorModal?.isConnected) {
+            elementoAnteriorModal.focus();
+        }
+    }
+
+    btnCerrarModal?.addEventListener("click", cerrarModalAnalisis);
+
+    modalAnalisis?.addEventListener("click", (evento) => {
+        if (evento.target === modalAnalisis) {
+            cerrarModalAnalisis();
+        }
+    });
+
+    document.addEventListener("keydown", (evento) => {
+        if (evento.key === "Escape" && modalAnalisis && !modalAnalisis.hidden) {
+            cerrarModalAnalisis();
+        }
+    });
+
+
     // Evita ejecutar el código si la página no tiene la lista de eventos.
     if (!lista || !contador || !mensaje) {
         return;
@@ -202,6 +245,7 @@ let idEventoEditando = null;
     <strong>Precio:</strong> ${precio}
 </p>
 
+
 <div class="acciones-evento">
     <button type="button" class="btn-editar" data-id="${idEvento}">
         Editar
@@ -210,7 +254,23 @@ let idEventoEditando = null;
     <button type="button" class="btn-cancelar-evento" data-id="${idEvento}">
         Cancelar evento
     </button>
+
+    <button
+        type="button"
+        class="btn-analizar-resenas"
+        data-id="${idEvento}"
+    >
+        Analizar reseñas con IA
+    </button>
 </div>
+
+<section
+    class="panel-analisis-resenas"
+    id="analisis-resenas-${idEvento}"
+    hidden
+    aria-live="polite"
+></section>
+
 
 </div>
 `;
@@ -428,6 +488,111 @@ let idEventoEditando = null;
         const botonEditar = evento.target.closest(".btn-editar");
         const botonCancelarEvento =
             evento.target.closest(".btn-cancelar-evento");
+
+        const botonAnalizar =
+    evento.target.closest(".btn-analizar-resenas");
+        
+        if (botonAnalizar) {
+            const id = Number(botonAnalizar.dataset.id);
+            const datosEvento = eventosCargados.find(
+                item => Number(item.id_evento) === id
+            );
+
+            if (!datosEvento || botonAnalizar.disabled) {
+                return;
+            }
+
+            abrirModalAnalisis();
+
+            tituloModal.textContent = "Análisis de reseñas";
+            subtituloModal.textContent = datosEvento.nombre_evento;
+            contenidoModal.textContent =
+                "Gemini está analizando las reseñas. Espera un momento...";
+
+            botonAnalizar.disabled = true;
+            botonAnalizar.textContent = "Analizando...";
+
+            try {
+                const respuesta = await fetch(
+                    `/api/eventos/${id}/analizar-resenas`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Accept": "application/json"
+                        },
+                        credentials: "same-origin",
+                        body: JSON.stringify({})
+                    }
+                );
+
+                const datos = await respuesta.json();
+
+                if (!respuesta.ok) {
+                    throw new Error(
+                        datos.mensaje || "No fue posible analizar las reseñas."
+                    );
+                }
+
+                const informe = datos.informe;
+
+                const crearLista = (elementos) => {
+                    if (!Array.isArray(elementos) || elementos.length === 0) {
+                        return "<p>No se identificaron elementos.</p>";
+                    }
+
+                    return `<ul>${elementos.map(item =>
+                        `<li>${escaparHTML(item)}</li>`
+                    ).join("")}</ul>`;
+                };
+
+                contenidoModal.innerHTML = `
+                    <div class="resumen-analisis">
+                        <div class="dato-analisis">
+                            <span>Percepción estimada por IA</span>
+                            <strong>${Number(informe.puntuacion_percepcion)}/10</strong>
+                        </div>
+
+                        <div class="dato-analisis">
+                            <span>Reseñas analizadas</span>
+                            <strong>${Number(datos.total_resenas)}</strong>
+                        </div>
+                    </div>
+
+                    <p class="sentimiento-analisis">
+                        <strong>Sentimiento general:</strong>
+                        ${escaparHTML(informe.sentimiento_general)}
+                    </p>
+
+                    <h3>Fortalezas</h3>
+                    ${crearLista(informe.fortalezas)}
+
+                    <h3>Oportunidades de mejora</h3>
+                    ${crearLista(informe.mejoras)}
+
+                    <h3>Recomendaciones</h3>
+                    ${crearLista(informe.recomendaciones)}
+
+                    <h3>Resumen</h3>
+                    <p>${escaparHTML(informe.resumen)}</p>
+
+                    <p><small>
+                        Resultado orientativo generado por IA a partir de las reseñas.
+                    </small></p>
+                `;
+            } catch (error) {
+                console.error("Error al analizar reseñas:", error);
+
+                contenidoModal.textContent =
+                    error.message ||
+                    "No fue posible generar el análisis. Inténtalo más tarde.";
+            } finally {
+                botonAnalizar.disabled = false;
+                botonAnalizar.textContent = "Analizar reseñas con IA";
+            }
+
+            return;
+        }
 
         if (botonEditar) {
             const id = Number(botonEditar.dataset.id);

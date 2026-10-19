@@ -39,6 +39,7 @@
             </p>
 
             <form id="formularioRegistro" class="registro-formulario">
+                
                 <label for="nombre">Nombre</label>
                 <input
                     type="text"
@@ -88,6 +89,87 @@
                     autocomplete="new-password"
                     required
                 >
+
+                <div class="registro-tipo">
+    <h2>¿Cómo quieres participar en CulturaApp?</h2>
+
+    <p>Selecciona la opción que mejor se adapte a ti.</p>
+
+    <label class="registro-opcion" for="tipoCliente">
+        <input
+            type="radio"
+            id="tipoCliente"
+            name="tipoRegistro"
+            value="cliente"
+            checked
+        >
+        <span>
+            <strong>Continuar como cliente</strong>
+            <small>Explora eventos, guarda favoritos y comparte opiniones.</small>
+        </span>
+    </label>
+
+    <label class="registro-opcion" for="tipoOrganizador">
+        <input
+            type="radio"
+            id="tipoOrganizador"
+            name="tipoRegistro"
+            value="organizador"
+        >
+        <span>
+            <strong>Continuar como organizador</strong>
+            <small>Solicita autorización para publicar eventos culturales.</small>
+        </span>
+    </label>
+</div>
+
+<div id="camposOrganizador" class="registro-organizador" hidden>
+    <h2>Información del organizador</h2>
+
+    <p>
+        Cuéntanos un poco sobre ti o sobre la organización que representas.
+        Esta información será revisada por el administrador.
+    </p>
+
+    <label for="tipoOrganizadorDetalle">¿Cómo organizas tus actividades?</label>
+    <select id="tipoOrganizadorDetalle" name="tipoOrganizadorDetalle">
+        <option value="">Selecciona una opción</option>
+        <option value="individual">Organizador independiente</option>
+        <option value="organizacion">Represento una organización</option>
+        <option value="colectivo">Represento un colectivo cultural</option>
+    </select>
+
+    <div id="grupoNombreOrganizacion" hidden>
+        <label for="nombreOrganizacion">Nombre de la organización o colectivo</label>
+        <input
+            type="text"
+            id="nombreOrganizacion"
+            name="nombreOrganizacion"
+            maxlength="150"
+        >
+    </div>
+
+    <label for="tipoActividades">Tipo de actividades que organizas</label>
+    <select id="tipoActividades" name="tipoActividades">
+        <option value="">Selecciona una categoría</option>
+        <option value="musica">Música y conciertos</option>
+        <option value="teatro">Teatro y artes escénicas</option>
+        <option value="danza">Danza</option>
+        <option value="artes">Artes y exposiciones</option>
+        <option value="deporte">Actividades deportivas</option>
+        <option value="ferias">Ferias y festivales</option>
+        <option value="otras">Otras actividades</option>
+    </select>
+
+    <label for="descripcionOrganizador">Cuéntanos sobre tus actividades</label>
+    <textarea
+        id="descripcionOrganizador"
+        name="descripcionOrganizador"
+        rows="4"
+        maxlength="1000"
+        placeholder="Describe las actividades que realizas o planeas organizar."
+    ></textarea>
+</div>
 
                 <label class="registro-terminos" for="aceptaTerminos">
                     <input

@@ -33,7 +33,7 @@
             <a href="../index.html">Explorar</a>
             <a href="#">Agenda</a>
             <a href="#">Favoritos</a>
-            <a href="gestionEventos.html" class="activo">Gestión</a>
+            <a href="gestionEventos.html" class="activo">Gestión de Eventos</a>
         </nav>
 
         <div>
@@ -173,6 +173,55 @@
         <section id="listaEventos" aria-live="polite">
             <p>Cargando eventos desde la base de datos...</p>
         </section>
+
+        
+<!-- Ventana flotante del análisis de reseñas -->
+<div
+    id="modalAnalisisResenas"
+    class="modal-analisis"
+    hidden
+    aria-hidden="true"
+>
+    <section
+        class="modal-analisis-contenido"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tituloModalAnalisis"
+        tabindex="-1"
+    >
+        <button
+            type="button"
+            id="cerrarModalAnalisis"
+            class="modal-analisis-cerrar"
+            aria-label="Cerrar análisis"
+        >
+            &times;
+        </button>
+
+        <div class="modal-analisis-encabezado">
+            <span class="modal-analisis-etiqueta">
+                CULTURAAPP · ANÁLISIS CON IA
+            </span>
+
+            <h2 id="tituloModalAnalisis">
+                Análisis de reseñas
+            </h2>
+
+            <p id="subtituloModalAnalisis">
+                Consulta la percepción de los asistentes al evento.
+            </p>
+        </div>
+
+        <div
+            id="contenidoModalAnalisis"
+            class="modal-analisis-cuerpo"
+            aria-live="polite"
+        >
+            <p>Selecciona un evento para analizar sus reseñas.</p>
+        </div>
+    </section>
+</div>
+
 
     </main>
 

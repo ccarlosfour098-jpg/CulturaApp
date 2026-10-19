@@ -1,6 +1,8 @@
 
 document.addEventListener("DOMContentLoaded", () => {
-    // LOGIN
+    // ==========================================
+    // INICIO DE SESIÓN
+    // ==========================================
     const formularioLogin = document.getElementById("formularioLogin");
 
     if (formularioLogin) {
@@ -21,7 +23,9 @@ document.addEventListener("DOMContentLoaded", () => {
             try {
                 const respuesta = await fetch("/api/auth/login", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
                     credentials: "same-origin",
                     body: JSON.stringify({
                         correo: correo.value.trim(),
@@ -32,7 +36,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 const datos = await respuesta.json();
 
                 if (!respuesta.ok) {
-                    mensaje.textContent = datos.mensaje ||
+                    mensaje.textContent =
+                        datos.mensaje ||
                         "No fue posible iniciar sesión.";
                     return;
                 }
@@ -41,17 +46,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 mensaje.textContent =
                     `¡Bienvenido, ${datos.usuario.nombre}!`;
 
-                const destinos = {
-                    Cliente: "../index.html",
-                    Organizador: "gestionEventos.html",
-                    Administrador: "gestionUsuarios.html"
-                };
+                
+const destinos = {
+    Cliente: "../index.html",
+    Organizador: "gestionEventos.html",
+    Administrador: "administracion.html"
+};
+
 
                 const destino = destinos[datos.usuario.rol];
 
                 if (!destino) {
                     mensaje.style.color = "#b42318";
-                    mensaje.textContent = "El rol de la cuenta no es reconocido.";
+                    mensaje.textContent =
+                        "El rol de la cuenta no es reconocido.";
                     return;
                 }
 
@@ -61,8 +69,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             } catch (error) {
                 console.error("Error en login:", error);
+
                 mensaje.textContent =
                     "No se pudo conectar con el servidor.";
+
             } finally {
                 boton.disabled = false;
                 boton.textContent = "Iniciar sesión →";
@@ -70,7 +80,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // REGISTRO
+    // ==========================================
+    // REGISTRO DE USUARIOS
+    // ==========================================
     const formularioRegistro =
         document.getElementById("formularioRegistro");
 
@@ -78,74 +90,195 @@ document.addEventListener("DOMContentLoaded", () => {
         const nombre = document.getElementById("nombre");
         const apellido = document.getElementById("apellido");
         const correo = document.getElementById("correoRegistro");
+
         const contrasena =
             document.getElementById("contrasenaRegistro");
+
         const confirmar =
             document.getElementById("confirmarContrasena");
-        const terminos = document.getElementById("aceptaTerminos");
-        const mensaje = document.getElementById("mensajeRegistro");
-        const boton = document.getElementById("botonRegistro");
 
-        formularioRegistro.addEventListener("submit", async (evento) => {
-            evento.preventDefault();
+        const terminos =
+            document.getElementById("aceptaTerminos");
 
-            mensaje.textContent = "";
-            mensaje.style.color = "#b42318";
+        const mensaje =
+            document.getElementById("mensajeRegistro");
 
-            if (contrasena.value !== confirmar.value) {
-                mensaje.textContent = "Las contraseñas no coinciden.";
-                confirmar.focus();
-                return;
-            }
+        const boton =
+            document.getElementById("botonRegistro");
 
-            if (!terminos.checked) {
-                mensaje.textContent =
-                    "Debes aceptar los términos para continuar.";
-                return;
-            }
+        // Opciones de tipo de registro
+        const tipoCliente =
+            document.getElementById("tipoCliente");
 
-            boton.disabled = true;
-            boton.textContent = "Creando cuenta...";
+        const tipoOrganizador =
+            document.getElementById("tipoOrganizador");
 
-            try {
-                const respuesta = await fetch("/api/auth/registro", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    credentials: "same-origin",
-                    body: JSON.stringify({
-                        nombre: nombre.value.trim(),
-                        apellido: apellido.value.trim(),
-                        correo: correo.value.trim(),
-                        contrasena: contrasena.value,
-                        confirmarContrasena: confirmar.value
-                    })
-                });
+        const opcionesRegistro =
+            document.querySelectorAll(
+                'input[name="tipoRegistro"]'
+            );
 
-                const datos = await respuesta.json();
+        // Campos adicionales del organizador
+        const camposOrganizador =
+            document.getElementById("camposOrganizador");
 
-                if (!respuesta.ok) {
-                    mensaje.textContent = datos.mensaje ||
-                        "No fue posible crear la cuenta.";
+        const tipoOrganizadorDetalle =
+            document.getElementById("tipoOrganizadorDetalle");
+
+        const grupoNombreOrganizacion =
+            document.getElementById("grupoNombreOrganizacion");
+
+        const nombreOrganizacion =
+            document.getElementById("nombreOrganizacion");
+
+        const tipoActividades =
+            document.getElementById("tipoActividades");
+
+        const descripcionOrganizador =
+            document.getElementById("descripcionOrganizador");
+
+        // Mostrar u ocultar los campos del organizador
+        function actualizarTipoRegistro() {
+            const esOrganizador = tipoOrganizador.checked;
+
+            camposOrganizador.hidden = !esOrganizador;
+
+            tipoOrganizadorDetalle.required = esOrganizador;
+            tipoActividades.required = esOrganizador;
+            descripcionOrganizador.required = esOrganizador;
+
+            actualizarNombreOrganizacion();
+        }
+
+        // Mostrar el nombre de la organización solo cuando corresponda
+        function actualizarNombreOrganizacion() {
+            const esOrganizador = tipoOrganizador.checked;
+
+            const representaOrganizacion =
+                tipoOrganizadorDetalle.value === "organizacion" ||
+                tipoOrganizadorDetalle.value === "colectivo";
+
+            const mostrarNombre =
+                esOrganizador && representaOrganizacion;
+
+            grupoNombreOrganizacion.hidden = !mostrarNombre;
+            nombreOrganizacion.required = mostrarNombre;
+        }
+
+        // Escuchar los cambios en las opciones de registro
+        opcionesRegistro.forEach((opcion) => {
+            opcion.addEventListener(
+                "change",
+                actualizarTipoRegistro
+            );
+        });
+
+        tipoOrganizadorDetalle.addEventListener(
+            "change",
+            actualizarNombreOrganizacion
+        );
+
+        // Establecer el estado inicial del formulario
+        actualizarTipoRegistro();
+
+        // ==========================================
+        // ENVIAR FORMULARIO DE REGISTRO
+        // ==========================================
+        formularioRegistro.addEventListener(
+            "submit",
+            async (evento) => {
+                evento.preventDefault();
+
+                mensaje.textContent = "";
+                mensaje.style.color = "#b42318";
+
+                // Validar que las contraseñas coincidan
+                if (contrasena.value !== confirmar.value) {
+                    mensaje.textContent =
+                        "Las contraseñas no coinciden.";
+
+                    confirmar.focus();
                     return;
                 }
 
-                mensaje.style.color = "#087443";
-                mensaje.textContent = datos.mensaje;
+                // Validar aceptación de términos
+                if (!terminos.checked) {
+                    mensaje.textContent =
+                        "Debes aceptar los términos para continuar.";
 
-                formularioRegistro.reset();
+                    return;
+                }
 
-                window.setTimeout(() => {
-                    window.location.href = "login.html";
-                }, 1800);
+                // Evitar el envío repetido
+                boton.disabled = true;
+                boton.textContent = "Creando cuenta...";
 
-            } catch (error) {
-                console.error("Error en registro:", error);
-                mensaje.textContent =
-                    "No se pudo conectar con el servidor.";
-            } finally {
-                boton.disabled = false;
-                boton.textContent = "Crear cuenta →";
+                try {
+                    const respuesta = await fetch(
+                        "/api/auth/registro",
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            credentials: "same-origin",
+                            body: JSON.stringify({
+    nombre: nombre.value.trim(),
+    apellido: apellido.value.trim(),
+    correo: correo.value.trim(),
+    contrasena: contrasena.value,
+    confirmarContrasena: confirmar.value,
+
+    tipoRegistro: tipoOrganizador.checked
+        ? "organizador"
+        : "cliente",
+
+    tipoOrganizadorDetalle: tipoOrganizadorDetalle.value,
+    nombreOrganizacion: nombreOrganizacion.value.trim(),
+    tipoActividades: tipoActividades.value,
+    descripcionOrganizador: descripcionOrganizador.value.trim()
+})
+                        }
+                    );
+
+                    const datos = await respuesta.json();
+
+                    if (!respuesta.ok) {
+                        mensaje.textContent =
+                            datos.mensaje ||
+                            "No fue posible crear la cuenta.";
+
+                        return;
+                    }
+
+                    mensaje.style.color = "#087443";
+mensaje.textContent =
+    datos.mensaje ||
+    "Registro realizado correctamente.";
+
+formularioRegistro.reset();
+
+                    // Restaurar los campos al estado inicial
+                    actualizarTipoRegistro();
+
+                    window.setTimeout(() => {
+                        window.location.href = "login.html";
+                    }, 1800);
+
+                } catch (error) {
+                    console.error(
+                        "Error en registro:",
+                        error
+                    );
+
+                    mensaje.textContent =
+                        "No se pudo conectar con el servidor.";
+
+                } finally {
+                    boton.disabled = false;
+                    boton.textContent = "Crear cuenta →";
+                }
             }
-        });
+        );
     }
 });
