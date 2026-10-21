@@ -1,0 +1,553 @@
+
+/* =====================================
+   GESTIÓN DE EVENTOS
+===================================== */
+
+.panel-gestion {
+    margin-bottom: 28px;
+}
+
+#panelFormularioEvento {
+    margin: 25px 0;
+    padding: 28px;
+    background: #ffffff;
+    border: 1px solid #dce3ed;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(20, 35, 60, 0.06);
+}
+
+#panelFormularioEvento[hidden] {
+    display: none !important;
+}
+
+#panelFormularioEvento h2 {
+    margin: 0 0 8px;
+    color: #17233a;
+    font-size: 1.6rem;
+}
+
+#panelFormularioEvento > p {
+    margin-bottom: 24px;
+    color: #64748b;
+}
+
+#formularioEvento {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 22px;
+    align-items: start;
+}
+
+#formularioEvento label {
+    display: block;
+    margin-top: 8px;
+    color: #273449;
+    font-weight: 600;
+    font-size: 0.94rem;
+}
+
+#formularioEvento input,
+#formularioEvento textarea,
+#formularioEvento select {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    padding: 12px 13px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #172033;
+    font: inherit;
+}
+
+#formularioEvento input:focus,
+#formularioEvento textarea:focus,
+#formularioEvento select:focus {
+    outline: 3px solid rgba(37, 99, 235, 0.14);
+    border-color: #2563eb;
+}
+
+#formularioEvento textarea {
+    resize: vertical;
+    min-height: 110px;
+}
+
+#formularioEvento label[for="descripcionEvento"],
+#formularioEvento #descripcionEvento,
+#formularioEvento button,
+#mensajeFormularioEvento {
+    grid-column: 1 / -1;
+}
+
+#formularioEvento button {
+    width: fit-content;
+    min-width: 150px;
+    padding: 12px 20px;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600;
+}
+
+#formularioEvento button[type="submit"] {
+    background: #17233a;
+    color: #ffffff;
+}
+
+#formularioEvento button[type="submit"]:hover {
+    background: #263b58;
+}
+
+#btnCancelarFormulario {
+    background: #eef2f7;
+    color: #273449;
+}
+
+#btnMostrarFormulario {
+    padding: 11px 17px;
+    border: 1px solid #d5dce7;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #17233a;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600;
+}
+
+#btnMostrarFormulario:hover {
+    background: #eef4ff;
+    border-color: #9bbcff;
+}
+
+#listaEventos {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin: 24px 0 50px;
+}
+
+#listaEventos .solicitud {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 24px;
+    background: #ffffff;
+    border: 1px solid #e0e6ef;
+    border-radius: 14px;
+    box-shadow: 0 4px 15px rgba(20, 35, 60, 0.04);
+}
+
+#listaEventos .solicitud h3 {
+    margin: 12px 0;
+    color: #17233a;
+    font-size: 1.3rem;
+}
+
+#listaEventos .solicitud p {
+    margin: 8px 0;
+    line-height: 1.6;
+    color: #475569;
+}
+
+#mensajeEventos,
+#mensajeFormularioEvento {
+    color: #b42318;
+}
+
+@media (max-width: 650px) {
+    #panelFormularioEvento {
+        padding: 20px 16px;
+    }
+
+    #formularioEvento {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    #formularioEvento label,
+    #formularioEvento input,
+    #formularioEvento textarea,
+    #formularioEvento select,
+    #formularioEvento button,
+    #mensajeFormularioEvento {
+        grid-column: 1;
+    }
+
+    #formularioEvento button {
+        width: 100%;
+    }
+
+    #listaEventos .solicitud {
+        padding: 18px;
+    }
+}
+
+
+
+/* =====================================
+   ACCIONES DE LOS EVENTOS
+===================================== */
+
+#listaEventos .acciones-evento {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+#listaEventos .acciones-evento button {
+    padding: 10px 15px;
+    border: 1px solid #d5dce7;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #273449;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+#listaEventos .acciones-evento .btn-editar:hover {
+    background: #eef4ff;
+    border-color: #9bbcff;
+}
+
+#listaEventos .acciones-evento .btn-cancelar-evento {
+    color: #b42318;
+    border-color: #f0c9c6;
+}
+
+#listaEventos .acciones-evento .btn-cancelar-evento:hover {
+    background: #fff1f0;
+}
+
+#listaEventos .acciones-evento .btn-analizar-resenas {
+    background: #17233a;
+    color: #ffffff;
+    border-color: #17233a;
+}
+
+#listaEventos .acciones-evento .btn-analizar-resenas:hover {
+    background: #263b58;
+    border-color: #263b58;
+}
+
+#listaEventos .acciones-evento button:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.25);
+    outline-offset: 2px;
+}
+
+#listaEventos .acciones-evento button:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
+
+/* =====================================
+   INFORME DE ANÁLISIS CON GEMINI
+===================================== */
+
+#listaEventos .panel-analisis-resenas {
+    box-sizing: border-box;
+    margin-top: 24px;
+    padding: 24px;
+    border: 1px solid #dce3ed;
+    border-radius: 12px;
+    background: #f8fafc;
+    color: #273449;
+}
+
+#listaEventos .panel-analisis-resenas[hidden] {
+    display: none !important;
+}
+
+#listaEventos .panel-analisis-resenas h3 {
+    margin: 0 0 18px;
+    color: #17233a;
+    font-size: 1.25rem;
+}
+
+#listaEventos .panel-analisis-resenas h4 {
+    margin: 22px 0 10px;
+    color: #17233a;
+    font-size: 1rem;
+}
+
+#listaEventos .panel-analisis-resenas p {
+    margin: 10px 0;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+}
+
+#listaEventos .panel-analisis-resenas ul {
+    margin: 8px 0 16px;
+    padding-left: 24px;
+}
+
+#listaEventos .panel-analisis-resenas li {
+    margin-bottom: 8px;
+    line-height: 1.55;
+    color: #475569;
+}
+
+#listaEventos .panel-analisis-resenas p small {
+    display: block;
+    margin-top: 18px;
+    padding-top: 12px;
+    border-top: 1px solid #e0e6ef;
+    color: #64748b;
+    font-size: 0.82rem;
+}
+
+
+/* =====================================
+   ADAPTACIÓN A PANTALLAS PEQUEÑAS
+===================================== */
+
+@media (max-width: 650px) {
+    #listaEventos .acciones-evento {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    #listaEventos .acciones-evento button {
+        width: 100%;
+    }
+
+    #listaEventos .panel-analisis-resenas {
+        margin-top: 18px;
+        padding: 18px 15px;
+    }
+}
+
+
+
+/* =====================================
+   MODAL FLOTANTE: ANÁLISIS CON IA
+===================================== */
+
+.modal-analisis[hidden] {
+    display: none !important;
+}
+
+.modal-analisis {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(8, 15, 28, 0.76);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    overflow-y: auto;
+    animation: aparecerFondoAnalisis 0.22s ease-out;
+}
+
+.modal-analisis-contenido {
+    position: relative;
+    box-sizing: border-box;
+    width: min(100%, 720px);
+    max-height: min(85vh, 850px);
+    overflow-y: auto;
+    padding: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    background: #101827;
+    color: #f8fafc;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
+    animation: elevarTarjetaAnalisis 0.32s ease-out;
+}
+
+.modal-analisis-cerrar {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 50%;
+    background: #263449;
+    color: #ffffff;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.modal-analisis-cerrar:hover {
+    background: #3b4b62;
+}
+
+.modal-analisis-cerrar:focus-visible {
+    outline: 3px solid #93c5fd;
+    outline-offset: 3px;
+}
+
+.modal-analisis-etiqueta {
+    display: block;
+    margin-bottom: 12px;
+    color: #93c5fd;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+}
+
+.modal-analisis-encabezado {
+    padding-right: 36px;
+}
+
+.modal-analisis-encabezado h2 {
+    margin: 0 0 10px;
+    color: #ffffff;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+}
+
+.modal-analisis-encabezado p {
+    margin: 0;
+    color: #cbd5e1;
+    line-height: 1.6;
+}
+
+.modal-analisis-cuerpo {
+    margin-top: 26px;
+}
+
+.modal-analisis-cuerpo h3 {
+    margin: 26px 0 12px;
+    color: #ffffff;
+    font-size: 1.15rem;
+}
+
+.modal-analisis-cuerpo h3:first-child {
+    margin-top: 0;
+}
+
+.modal-analisis-cuerpo h4 {
+    margin: 22px 0 10px;
+    color: #e2e8f0;
+    font-size: 1rem;
+}
+
+.modal-analisis-cuerpo p {
+    color: #cbd5e1;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+.modal-analisis-cuerpo ul {
+    margin: 10px 0 18px;
+    padding-left: 24px;
+}
+
+.modal-analisis-cuerpo li {
+    margin-bottom: 10px;
+    color: #dbe4f0;
+    line-height: 1.6;
+}
+
+.modal-analisis-cuerpo small {
+    color: #94a3b8;
+}
+
+@keyframes aparecerFondoAnalisis {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes elevarTarjetaAnalisis {
+    from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (max-width: 600px) {
+    .modal-analisis {
+        padding: 12px;
+    }
+
+    .modal-analisis-contenido {
+        max-height: 92vh;
+        padding: 24px 18px;
+        border-radius: 16px;
+    }
+
+    .modal-analisis-cerrar {
+        top: 10px;
+        right: 10px;
+    }
+
+    .modal-analisis-encabezado {
+        padding-right: 30px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .modal-analisis,
+    .modal-analisis-contenido {
+        animation: none;
+    }
+}
+
+/* =========================================
+   TEMA OSCURO - GESTIÓN DE EVENTOS
+========================================= */
+
+:root[data-tema="oscuro"] #panelFormularioEvento,
+:root[data-tema="oscuro"] #listaEventos .solicitud,
+:root[data-tema="oscuro"] #listaEventos .panel-analisis-resenas {
+    background: var(--superficie);
+    color: var(--texto);
+    border-color: var(--borde);
+}
+
+:root[data-tema="oscuro"] #panelFormularioEvento h2,
+:root[data-tema="oscuro"] #listaEventos .solicitud h3,
+:root[data-tema="oscuro"] #listaEventos .panel-analisis-resenas h3,
+:root[data-tema="oscuro"] #listaEventos .panel-analisis-resenas h4 {
+    color: var(--texto);
+}
+
+:root[data-tema="oscuro"] #panelFormularioEvento > p,
+:root[data-tema="oscuro"] #formularioEvento label,
+:root[data-tema="oscuro"] #listaEventos .solicitud p,
+:root[data-tema="oscuro"] #listaEventos .panel-analisis-resenas li {
+    color: var(--texto-secundario);
+}
+
+:root[data-tema="oscuro"] #formularioEvento input,
+:root[data-tema="oscuro"] #formularioEvento textarea,
+:root[data-tema="oscuro"] #formularioEvento select {
+    background: var(--superficie-secundaria);
+    color: var(--texto);
+    border-color: var(--borde);
+}
+
+:root[data-tema="oscuro"] #btnMostrarFormulario,
+:root[data-tema="oscuro"] #btnCancelarFormulario,
+:root[data-tema="oscuro"] #listaEventos .acciones-evento button:not(.btn-analizar-resenas) {
+    background: var(--superficie-secundaria);
+    color: var(--texto);
+    border-color: var(--borde);
+}
+
+:root[data-tema="oscuro"] #listaEventos .acciones-evento .btn-analizar-resenas,
+:root[data-tema="oscuro"] #formularioEvento button[type="submit"] {
+    background: var(--color-primario);
+    color: #20172f;
+    border-color: var(--color-primario);
+}
+
+:root[data-tema="oscuro"] #listaEventos .panel-analisis-resenas p small {
+    color: var(--texto-secundario);
+}

@@ -7,9 +7,13 @@
 
     <title>CulturApp Popayán</title>
 
-    <link rel="stylesheet" href="../css/variable.css">
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/responsive.css">
+    
+<link rel="stylesheet" href="css/variable.css">
+<link rel="stylesheet" href="css/perfil.css">
+<link rel="stylesheet" href="css/tema-global.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/responsive.css">
+
 </head>
 
 <body>
@@ -26,15 +30,124 @@
             </div>
         </div>
 
-        <nav class="menu">
-            <a href="#">Agenda</a>
-            <a href="#">Favoritos</a>
-            <a href="paginas/gestionEventos.html">Gestión</a>
-        </nav>
+        <nav class="menu" id="menuPrincipal">
+    <a href="index.html" class="enlace-explorar">Explorar</a>
 
-        <button class="btn-ingresar">
-            👤 Ingresar
+    <a href="paginas/favoritos.html"
+       id="enlaceFavoritos"
+       hidden>
+        Favoritos
+    </a>
+
+    <a href="paginas/gestionEventos.html"
+       id="enlaceGestionEventos"
+       hidden>
+        Mis eventos
+    </a>
+
+    <a href="paginas/administracion.html"
+       id="enlaceGestionAdmin"
+       hidden>
+        Administración
+    </a>
+</nav>
+
+        
+
+
+<div class="acciones-header">
+
+    <!-- Botón del tema claro/oscuro -->
+    <button
+        type="button"
+        id="botonTema"
+        class="boton-tema"
+        aria-label="Activar modo oscuro"
+        title="Cambiar tema">
+
+        <span id="iconoTema" aria-hidden="true">🌙</span>
+        <span class="texto-tema">Modo oscuro</span>
+    </button>
+
+    <!-- Acceso para usuarios que no han iniciado sesión -->
+    <a href="paginas/login.html"
+       class="btn-ingresar"
+       id="enlaceIngresar">
+        Ingresar
+    </a>
+
+    <!-- Perfil para usuarios con sesión iniciada -->
+    <div class="perfil-usuario" id="contenedorPerfil" hidden>
+
+        <button
+            type="button"
+            class="perfil-boton"
+            id="botonPerfil"
+            aria-expanded="false"
+            aria-controls="panelPerfil">
+
+            <span class="perfil-avatar" id="avatarUsuario">U</span>
+
+            <span class="perfil-identidad">
+                <strong id="nombreUsuario">Mi cuenta</strong>
+                <small id="rolUsuario">Usuario</small>
+            </span>
+
+            <span class="perfil-flecha" aria-hidden="true">⌄</span>
         </button>
+
+        <!-- Panel deslizante -->
+        <aside class="panel-perfil" id="panelPerfil" hidden>
+
+            <div class="panel-perfil-cabecera">
+                <span class="perfil-avatar perfil-avatar-grande"
+                      id="avatarPanel">U</span>
+
+                <div>
+                    <strong id="nombrePanel">Mi cuenta</strong>
+                    <small id="correoPanel">Cuenta de CulturaApp</small>
+                    <span class="perfil-etiqueta" id="rolPanel">Usuario</span>
+                </div>
+            </div>
+
+            <div class="panel-perfil-separador"></div>
+
+            <nav class="panel-perfil-opciones" aria-label="Opciones de perfil">
+
+                <a href="#" id="enlaceMiPerfil">
+                    <span aria-hidden="true">👤</span>
+                    Mi perfil
+                </a>
+
+                <a href="paginas/gestionEventos.html"
+                   id="enlaceOrganizador"
+                   hidden>
+                    <span aria-hidden="true">🎭</span>
+                    Gestión de eventos
+                </a>
+
+                <a href="paginas/administracion.html"
+                   id="enlaceAdministrador"
+                   hidden>
+                    <span aria-hidden="true">⚙️</span>
+                    Panel de administración
+                </a>
+
+                <button type="button"
+                        id="botonCerrarSesion"
+                        class="opcion-cerrar-sesion">
+                    <span aria-hidden="true">↪</span>
+                    Cerrar sesión
+                </button>
+
+            </nav>
+        </aside>
+    </div>
+
+</div>
+
+
+
 
     </header>
 
@@ -91,7 +204,7 @@
                 </select>
 
                 <button class="btn-explorar">
-                    Explorar agenda ->
+                    Explorar agenda
                 </button>
 
             </div>
@@ -141,221 +254,7 @@
 
             <div class="eventos">
 
-
-                <!-- EVENTO 1 -->
-                <article class="tarjeta-evento">
-
-                    <img
-                        src="../img/evento1.jpg"
-                        alt="Festival de Chirimías"
-                        class="imagen-evento">
-
-                    <div class="informacion-evento">
-
-                        <div class="etiquetas">
-
-                            <span class="etiqueta-evento">
-                                Música Tradicional
-                            </span>
-
-                            <span class="etiqueta-gratis">
-                                Entrada Libre
-                            </span>
-
-                        </div>
-
-                        <p class="dato-evento">
-                            18 Nov, 2026 • 6:30 PM
-                        </p>
-
-                        <h3>
-                            Festival de Chirimías y Música
-                            Tradicional del Gran Cauca
-                        </h3>
-
-                        <p class="dato-evento">
-                            Parque Caldas (Centro Histórico)
-                        </p>
-
-                        <p class="dato-evento">
-                            Alcaldía de Popayán & Red Cultural
-                        </p>
-
-                        <div class="pie-tarjeta">
-
-                            <span>Visualizando Detalle</span>
-
-                            <button class="btn-detalles">
-                                Ver detalles
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </article>
-
-
-                <!-- EVENTO 2 -->
-                <article class="tarjeta-evento">
-
-                    <img
-                        src="img/evento2.jpg"
-                        alt="Noche de galerías"
-                        class="imagen-evento">
-
-                    <div class="informacion-evento">
-
-                        <div class="etiquetas">
-
-                            <span class="etiqueta-evento">
-                                Artes Plásticas
-                            </span>
-
-                            <span class="etiqueta-gratis">
-                                $15.000 COP
-                            </span>
-
-                        </div>
-
-                        <p class="dato-evento">
-                            22 Nov, 2026 • 7:00 PM
-                        </p>
-
-                        <h3>
-                            Noche de Galerías en el Claustro
-                            de Santo Domingo
-                        </h3>
-
-                        <p class="dato-evento">
-                            Claustro de Santo Domingo
-                        </p>
-
-                        <p class="dato-evento">
-                            Vicerrectoría de Cultura Corporación universitaria Autónoma del Cauca
-                        </p>
-
-                        <div class="pie-tarjeta">
-
-                            <span>Cupos limitados</span>
-
-                            <button class="btn-detalles">
-                                Ver detalles
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </article>
-
-
-                <!-- EVENTO 3 -->
-                <article class="tarjeta-evento">
-
-                    <img
-                        src="img/evento3.jpg"
-                        alt="Carrera Atlética"
-                        class="imagen-evento">
-
-                    <div class="informacion-evento">
-
-                        <div class="etiquetas">
-
-                            <span class="etiqueta-evento">
-                                Deporte Comunitario
-                            </span>
-
-                            <span class="etiqueta-gratis">
-                                Gratis
-                            </span>
-
-                        </div>
-
-                        <p class="dato-evento">
-                            Por confirmar nueva fecha
-                        </p>
-
-                        <h3>
-                            Carrera Atlética 10K Nocturna
-                            Ciudad Blanca
-                        </h3>
-
-                        <p class="dato-evento">
-                            Salida: Parque Caldas
-                        </p>
-
-                        <p class="dato-evento">
-                            Secretaría de Deporte y Recreación
-                        </p>
-
-                        <div class="pie-tarjeta">
-
-                            <span>Aviso de reprogramación</span>
-
-                            <button class="btn-detalles">
-                                Ver detalles
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </article>
-
-
-                <!-- EVENTO 4 -->
-                <article class="tarjeta-evento">
-
-                    <img
-                        src="img/evento4.jpg"
-                        alt="Obra teatral"
-                        class="imagen-evento">
-
-                    <div class="informacion-evento">
-
-                        <div class="etiquetas">
-
-                            <span class="etiqueta-evento">
-                                Teatro & Memoria
-                            </span>
-
-                            <span class="etiqueta-gratis">
-                                $20.000 COP
-                            </span>
-
-                        </div>
-
-                        <p class="dato-evento">
-                            30 Nov, 2026 • 7:30 PM
-                        </p>
-
-                        <h3>
-                            Obra Teatral: Leyendas Vivas
-                            del Macizo y Valle de Pubenza
-                        </h3>
-
-                        <p class="dato-evento">
-                            Teatro Municipal Guillermo Valencia
-                        </p>
-
-                        <p class="dato-evento">
-                            Colectivo Escénico Semillas del Cauca
-                        </p>
-
-                        <div class="pie-tarjeta">
-
-                            <span>Boletería en taquilla</span>
-
-                            <button class="btn-detalles">
-                                Ver detalles
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </article>
+                
 
             </div>
 
@@ -390,6 +289,25 @@
         </div>
 
     </footer>
+<script src="js/tema.js" defer></script>
+<script src="js/main.js" defer></script>
+<script src="js/eventos.js" defer></script>
+<script src="js/perfil.js" defer></script>
+
+
+<div id="notificacionCulturApp" class="notificacion-app" role="status" aria-live="polite" hidden>
+    <div class="notificacion-app-icono" id="notificacionIcono">✓</div>
+
+    <div class="notificacion-app-contenido">
+        <h3 id="notificacionTitulo">Operación completada</h3>
+        <p id="notificacionMensaje"></p>
+    </div>
+
+    <button type="button" id="cerrarNotificacion" aria-label="Cerrar notificación">
+        ×
+    </button>
+</div>
+
 
 </body>
 </html>

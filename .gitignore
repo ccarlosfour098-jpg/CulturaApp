@@ -1,0 +1,10 @@
+
+node_modules/
+.env
+.env.*
+!.env.example
+
+# Archivos de respaldo del servidor
+server.duplicado-respaldo.js
+server.local-respaldo.js
+server.respaldo-imagenes.js

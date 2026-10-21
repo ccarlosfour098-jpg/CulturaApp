@@ -1,12 +1,71 @@
+
+/* =========================================
+   CULTURAAPP - SISTEMA VISUAL GLOBAL
+   Modo claro y modo oscuro
+========================================= */
+
 :root {
-    --azul: #0b5ed7;
-    --azul-oscuro: #111b31;
-    --azul-claro: #eaf1ff;
-    --fondo: #f5f7fc;
-    --blanco: #ffffff;
-    --gris: #667085;
-    --gris-claro: #e5e7eb;
-    --verde: #18a957;
-    --amarillo: #f5a623;
-    --rojo: #dc3545;
+    color-scheme: light;
+
+    /* Identidad visual */
+    --color-primario: #6d4ac7;
+    --color-primario-hover: #5938ad;
+    --color-primario-suave: #eee8fb;
+    --color-primario-texto: #4e3298;
+
+    /* Superficies y textos */
+    --fondo: #f7f6fb;
+    --superficie: #ffffff;
+    --superficie-secundaria: #f1eff7;
+    --texto: #252238;
+    --texto-secundario: #6d687d;
+    --borde: #e5e1ee;
+
+    /* Compatibilidad con los estilos existentes */
+    --azul: var(--color-primario);
+    --azul-oscuro: var(--texto);
+    --azul-claro: var(--color-primario-suave);
+    --blanco: var(--superficie);
+    --gris: var(--texto-secundario);
+    --gris-claro: var(--borde);
+
+    /* Estados */
+    --verde: #168653;
+    --amarillo: #a96b08;
+    --rojo: #c5364b;
+
+    /* Acabados */
+    --sombra-suave: 0 10px 30px rgba(38, 26, 75, 0.07);
+    --radio-tarjeta: 16px;
+    --transicion-tema: 180ms ease;
+}
+
+/* PALETA DEL MODO OSCURO */
+:root[data-tema="oscuro"] {
+    color-scheme: dark;
+
+    --color-primario: #b49af7;
+    --color-primario-hover: #c7b4ff;
+    --color-primario-suave: #35294d;
+    --color-primario-texto: #d9ccff;
+
+    --fondo: #15141c;
+    --superficie: #201e29;
+    --superficie-secundaria: #2a2736;
+    --texto: #f3f0fa;
+    --texto-secundario: #b6b0c6;
+    --borde: #393545;
+
+    --azul: var(--color-primario);
+    --azul-oscuro: var(--texto);
+    --azul-claro: var(--color-primario-suave);
+    --blanco: var(--superficie);
+    --gris: var(--texto-secundario);
+    --gris-claro: var(--borde);
+
+    --verde: #7bd9a8;
+    --amarillo: #f5c56b;
+    --rojo: #ff8796;
+
+    --sombra-suave: 0 10px 30px rgba(0, 0, 0, 0.22);
 }

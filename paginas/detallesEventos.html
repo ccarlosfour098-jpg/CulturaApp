@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del evento | CulturApp</title>
+    <link rel="stylesheet" href="../css/variable.css">
+    <link rel="stylesheet" href="css/tema-global.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/detallesEventos.css">
+    <script src="../js/detallesEventos.js" defer></script>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icono">🏛</div>
+            <div class="logo-texto">
+                <h2>CulturApp Popayán</h2>
+                <p>AGENDA CULTURAL & DEPORTIVA</p>
+            </div>
+        </div>
+        <nav class="menu">
+            <a href="../index.html">Agenda</a>
+            <a href="login.html">Ingresar</a>
+        </nav>
+    </header>
+
+    <main class="contenedor detalle-contenedor">
+        <a class="volver" href="../index.html">← Volver a la agenda</a>
+
+        <p id="estadoEvento" role="status">Cargando evento...</p>
+
+        <section id="detalleEvento" hidden>
+            <div class="detalle-portada">
+                <span id="categoriaEvento" class="etiqueta-evento"></span>
+                <h1 id="nombreEvento"></h1>
+                <p id="ubicacionEvento" class="dato-evento"></p>
+                <p id="fechaEvento" class="dato-evento"></p>
+                <p id="organizadorEvento" class="dato-evento"></p>
+                <p id="precioEvento" class="precio-evento"></p>
+                <p id="descripcionEvento"></p>
+            </div>
+
+            <section class="resenas-seccion">
+                <h2>Opiniones de la comunidad</h2>
+
+                <div class="resumen-resenas">
+                    <strong id="promedioResenas">—</strong>
+                    <span id="estrellasPromedio" aria-label="Sin calificaciones">☆☆☆☆☆</span>
+                    <p id="totalResenas">Todavía no hay reseñas.</p>
+                </div>
+
+                <p id="mensajeResenas" role="status"></p>
+                <div id="listaResenas" class="lista-resenas"></div>
+
+                <form id="formularioResena" class="formulario-resena">
+                    <h3>Comparte tu experiencia</h3>
+
+                    <label for="calificacionResena">Tu calificación</label>
+                    <select id="calificacionResena" required>
+                        <option value="">Selecciona estrellas</option>
+                        <option value="5">★★★★★ — Excelente</option>
+                        <option value="4">★★★★☆ — Muy bueno</option>
+                        <option value="3">★★★☆☆ — Bueno</option>
+                        <option value="2">★★☆☆☆ — Regular</option>
+                        <option value="1">★☆☆☆☆ — Malo</option>
+                    </select>
+
+                    <label for="comentarioResena">Tu comentario</label>
+                    <textarea id="comentarioResena" rows="4"
+                        maxlength="2000" required
+                        placeholder="¿Cómo fue tu experiencia con este evento?"></textarea>
+
+                    <button type="submit" class="btn-explorar">
+                        Publicar reseña
+                    </button>
+                    <p id="mensajeFormulario" role="status"></p>
+                </form>
+            </section>
+        </section>
+    </main>
+
+    <script src="../js/tema.js" defer></script>
+    <script src="js/perfil.js" defer></script>
+</body>
+</html>
