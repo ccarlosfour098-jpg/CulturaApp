@@ -1,0 +1,177 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi perfil | CulturaApp Popayán</title>
+
+    <link rel="stylesheet" href="../css/variable.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/perfil.css">
+
+    <script src="../js/tema.js" defer></script>
+    <script src="../js/perfil.js" defer></script>
+    <script src="../js/mi-perfil.js" defer></script>
+</head>
+
+<body>
+<header class="header">
+    <a href="../index.html" class="logo">
+        <div class="logo-icono">🏛</div>
+        <div class="logo-texto">
+            <h2>CulturApp Popayán</h2>
+            <p>AGENDA CULTURAL &amp; DEPORTIVA</p>
+        </div>
+    </a>
+
+    <nav class="menu">
+        <a href="../index.html">Explorar</a>
+        <a href="favoritos.html" id="enlaceFavoritos" hidden>Favoritos</a>
+        <a href="gestionEventos.html" id="enlaceGestionEventos" hidden>Mis eventos</a>
+        <a href="administracion.html" id="enlaceGestionAdmin" hidden>Administración</a>
+    </nav>
+
+    <div class="acciones-header">
+        <button type="button" class="boton-tema" id="botonTema">
+            ◐ Tema
+        </button>
+
+        <a href="login.html" class="btn-ingresar" id="enlaceIngresar">
+            Ingresar
+        </a>
+
+        <div class="perfil-usuario" id="contenedorPerfil" hidden>
+            <button type="button" class="perfil-boton" id="botonPerfil"
+                    aria-expanded="false" aria-controls="panelPerfil">
+                <span class="perfil-avatar" id="avatarUsuario">U</span>
+                <span class="perfil-identidad">
+                    <strong id="nombreUsuario">Mi cuenta</strong>
+                    <small id="rolUsuario">Usuario</small>
+                </span>
+                <span class="perfil-flecha" aria-hidden="true">⌄</span>
+            </button>
+
+            <aside class="panel-perfil" id="panelPerfil" hidden>
+                <div class="panel-perfil-cabecera">
+                    <span class="perfil-avatar perfil-avatar-grande"
+                          id="avatarPanel">U</span>
+                    <div>
+                        <strong id="nombrePanel">Mi cuenta</strong>
+                        <small id="correoPanel"></small>
+                        <span class="perfil-etiqueta" id="rolPanel"></span>
+                    </div>
+                </div>
+
+                <div class="panel-perfil-separador"></div>
+
+                <nav class="panel-perfil-opciones" aria-label="Opciones de perfil">
+                    <a href="perfil.html" id="enlaceMiPerfil">👤 Mi perfil</a>
+                    <a href="gestionEventos.html" id="enlaceOrganizador" hidden>
+                        🎭 Gestión de eventos
+                    </a>
+                    <a href="administracion.html" id="enlaceAdministrador" hidden>
+                        ⚙️ Panel de administración
+                    </a>
+                    <button type="button" id="botonCerrarSesion"
+                            class="opcion-cerrar-sesion">
+                        ↪ Cerrar sesión
+                    </button>
+                </nav>
+            </aside>
+        </div>
+    </div>
+</header>
+
+<main class="contenedor pagina-mi-perfil">
+    <section class="presentacion">
+        <span class="etiqueta">Tu cuenta</span>
+        <h1>Mi perfil</h1>
+        <p>Consulta y actualiza tu información personal en CulturaApp.</p>
+    </section>
+
+    <section class="perfil-contenido">
+        <div class="perfil-resumen">
+            <div class="perfil-avatar perfil-avatar-grande" id="avatarGrande">U</div>
+            <h2 id="resumenNombre">Cargando perfil...</h2>
+            <p id="resumenCorreo"></p>
+            <span class="perfil-etiqueta" id="resumenRol"></span>
+            <p id="fechaRegistro"></p>
+        </div>
+
+        <form id="formularioPerfil" class="formulario-perfil">
+            <h2>Información personal</h2>
+
+            <label for="nombre">Nombre</label>
+            <input id="nombre" name="nombre" type="text"
+                   maxlength="80" required>
+
+            <label for="apellido">Apellido</label>
+            <input id="apellido" name="apellido" type="text"
+                   maxlength="80" required>
+
+            <label for="correo">Correo electrónico</label>
+            <input id="correo" name="correo" type="email"
+                   maxlength="150" required>
+
+            <label for="telefono">Teléfono (opcional)</label>
+            <input id="telefono" name="telefono" type="tel"
+                   maxlength="20">
+
+            <p id="mensajePerfil" role="status" aria-live="polite"></p>
+
+            <button type="submit" id="guardarPerfil">
+                Guardar cambios
+            </button>
+        </form>
+
+        
+<form id="formularioContrasena" class="formulario-perfil">
+    <h2>Seguridad</h2>
+    <p>Actualiza tu contraseña para mantener segura tu cuenta.</p>
+
+    <label for="contrasenaActual">Contraseña actual</label>
+    <input
+        id="contrasenaActual"
+        name="contrasenaActual"
+        type="password"
+        autocomplete="current-password"
+        required
+    >
+
+    <label for="nuevaContrasena">Nueva contraseña</label>
+    <input
+        id="nuevaContrasena"
+        name="nuevaContrasena"
+        type="password"
+        autocomplete="new-password"
+        minlength="8"
+        required
+    >
+
+    <label for="confirmarContrasena">Confirmar nueva contraseña</label>
+    <input
+        id="confirmarContrasena"
+        name="confirmarContrasena"
+        type="password"
+        autocomplete="new-password"
+        minlength="8"
+        required
+    >
+
+    <p id="mensajeContrasena" role="status" aria-live="polite"></p>
+
+    <button type="submit" id="cambiarContrasena">
+        Cambiar contraseña
+    </button>
+</form>
+
+    </section>
+</main>
+
+<footer class="footer">
+    <p>© 2026 CulturaApp Popayán. Proyecto Académico y de Fomento Cultural.</p>
+</footer>
+</body>
+</html>

@@ -6,6 +6,9 @@ const session = require("express-session");
 const bcrypt = require("bcryptjs");
 const db = require("./config/db");
 const { GoogleGenAI } = require("@google/genai");
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
 
 
 
@@ -32,6 +35,62 @@ app.use(session({
 }));
 
 app.use(express.static(__dirname));
+
+// Configuración para guardar imágenes de eventos
+const carpetaImagenes = path.join(
+    __dirname,
+    "uploads",
+    "eventos"
+);
+
+fs.mkdirSync(carpetaImagenes, { recursive: true });
+
+const almacenamientoImagenes = multer.diskStorage({
+    destination: (req, file, callback) => {
+        callback(null, carpetaImagenes);
+    },
+
+    filename: (req, file, callback) => {
+        const extensiones = {
+            "image/jpeg": ".jpg",
+            "image/png": ".png",
+            "image/webp": ".webp"
+        };
+
+        const extension = extensiones[file.mimetype];
+
+        if (!extension) {
+            return callback(
+                new Error("Solo se permiten imágenes JPG, PNG o WebP.")
+            );
+        }
+
+        callback(null, `${require("crypto").randomUUID()}${extension}`);
+    }
+});
+
+const subirImagenEvento = multer({
+    storage: almacenamientoImagenes,
+    limits: {
+        fileSize: 5 * 1024 * 1024,
+        files: 1
+    },
+    fileFilter: (req, file, callback) => {
+        const tiposPermitidos = [
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+        ];
+
+        if (!tiposPermitidos.includes(file.mimetype)) {
+            return callback(
+                new Error("Solo se permiten imágenes JPG, PNG o WebP.")
+            );
+        }
+
+        callback(null, true);
+    }
+});
 
 // Estado del servidor
 app.get("/api/estado", (req, res) => {
@@ -151,6 +210,254 @@ app.post("/api/auth/login", async (req, res) => {
     }
 });
 
+
+/* =========================================
+   PERFIL DEL USUARIO
+========================================= */
+
+// Consultar los datos del perfil
+app.get("/api/perfil", async (req, res) => {
+    const usuario = req.session?.usuario;
+
+    if (!usuario) {
+        return res.status(401).json({
+            mensaje: "Debes iniciar sesión."
+        });
+    }
+
+    try {
+        const [usuarios] = await db.execute(
+            `SELECT
+                id_usuario,
+                nombre_usuario,
+                apellido_usuario,
+                correo_electronico,
+                telefono,
+                estado,
+                fecha_registro
+             FROM usuarios
+             WHERE id_usuario = ?`,
+            [usuario.id]
+        );
+
+        if (usuarios.length === 0) {
+            return res.status(404).json({
+                mensaje: "No se encontró la cuenta."
+            });
+        }
+
+        return res.json({
+            usuario: {
+                ...usuarios[0],
+                rol: usuario.rol
+            }
+        });
+    } catch (error) {
+        console.error("Error al consultar el perfil:", error);
+
+        return res.status(500).json({
+            mensaje: "No fue posible cargar el perfil."
+        });
+    }
+});
+
+
+// Actualizar los datos personales
+app.put("/api/perfil", async (req, res) => {
+    const usuario = req.session?.usuario;
+
+    if (!usuario) {
+        return res.status(401).json({
+            mensaje: "Debes iniciar sesión."
+        });
+    }
+
+    const nombre = String(req.body.nombre || "").trim();
+    const apellido = String(req.body.apellido || "").trim();
+    const correo = String(req.body.correo || "").trim().toLowerCase();
+    const telefono = String(req.body.telefono || "").trim();
+
+    if (!nombre || !apellido || !correo) {
+        return res.status(400).json({
+            mensaje: "Nombre, apellido y correo son obligatorios."
+        });
+    }
+
+    if (nombre.length > 80 || apellido.length > 80 ||
+        correo.length > 150 || telefono.length > 20) {
+        return res.status(400).json({
+            mensaje: "Uno o más campos superan la longitud permitida."
+        });
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+        return res.status(400).json({
+            mensaje: "El correo electrónico no es válido."
+        });
+    }
+
+    try {
+        const [resultado] = await db.execute(
+            `UPDATE usuarios
+             SET nombre_usuario = ?,
+                 apellido_usuario = ?,
+                 correo_electronico = ?,
+                 telefono = ?
+             WHERE id_usuario = ?`,
+            [
+                nombre,
+                apellido,
+                correo,
+                telefono || null,
+                usuario.id
+            ]
+        );
+
+        if (resultado.affectedRows === 0) {
+            const [existentes] = await db.execute(
+                `SELECT id_usuario
+                 FROM usuarios
+                 WHERE id_usuario = ?`,
+                [usuario.id]
+            );
+
+            if (existentes.length === 0) {
+                return res.status(404).json({
+                    mensaje: "No se encontró la cuenta."
+                });
+            }
+        }
+
+        // Mantener actualizados los datos de la sesión.
+        req.session.usuario.nombre = nombre;
+        req.session.usuario.apellido = apellido;
+        req.session.usuario.correo = correo;
+
+        return res.json({
+            mensaje: "Perfil actualizado correctamente.",
+            usuario: {
+                id: usuario.id,
+                nombre,
+                apellido,
+                correo,
+                rol: usuario.rol,
+                telefono: telefono || null
+            }
+        });
+    } catch (error) {
+        if (error.code === "ER_DUP_ENTRY") {
+            return res.status(409).json({
+                mensaje: "Ese correo ya está registrado en otra cuenta."
+            });
+        }
+
+        console.error("Error al actualizar el perfil:", error);
+
+        return res.status(500).json({
+            mensaje: "No fue posible actualizar el perfil."
+        });
+    }
+});
+
+
+ // Cambiar la contraseña del usuario autenticado
+app.put("/api/perfil/cambiar-contrasena", async (req, res) => {
+    const usuario = req.session?.usuario;
+
+    if (!usuario) {
+        return res.status(401).json({
+            mensaje: "Debes iniciar sesión."
+        });
+    }
+
+    const { contrasenaActual, nuevaContrasena, confirmarContrasena } = req.body;
+
+    if (
+        typeof contrasenaActual !== "string" ||
+        typeof nuevaContrasena !== "string" ||
+        typeof confirmarContrasena !== "string" ||
+        !contrasenaActual ||
+        !nuevaContrasena ||
+        !confirmarContrasena
+    ) {
+        return res.status(400).json({
+            mensaje: "Completa todos los campos de contraseña."
+        });
+    }
+
+    if (
+        nuevaContrasena.length < 8 ||
+        Buffer.byteLength(nuevaContrasena, "utf8") > 72
+    ) {
+        return res.status(400).json({
+            mensaje: "La nueva contraseña debe tener al menos 8 caracteres y respetar el límite permitido."
+        });
+    }
+
+    if (nuevaContrasena !== confirmarContrasena) {
+        return res.status(400).json({
+            mensaje: "La nueva contraseña y su confirmación no coinciden."
+        });
+    }
+
+    if (nuevaContrasena === contrasenaActual) {
+        return res.status(400).json({
+            mensaje: "La nueva contraseña debe ser diferente de la actual."
+        });
+    }
+
+    try {
+        const [usuarios] = await db.execute(
+            `SELECT contrasena
+             FROM usuarios
+             WHERE id_usuario = ?
+             LIMIT 1`,
+            [usuario.id]
+        );
+
+        if (usuarios.length === 0) {
+            return res.status(404).json({
+                mensaje: "No se encontró la cuenta."
+            });
+        }
+
+        const coincide = await bcrypt.compare(
+            contrasenaActual,
+            usuarios[0].contrasena
+        );
+
+        if (!coincide) {
+            return res.status(400).json({
+                mensaje: "La contraseña actual es incorrecta."
+            });
+        }
+
+        const hash = await bcrypt.hash(nuevaContrasena, 12);
+
+        await db.execute(
+            `UPDATE usuarios
+             SET contrasena = ?
+             WHERE id_usuario = ?`,
+            [hash, usuario.id]
+        );
+
+        return res.json({
+            mensaje: "La contraseña se cambió correctamente."
+        });
+
+    } catch (error) {
+        console.error(
+            "Error al cambiar la contraseña:",
+            error.code || error.message
+        );
+
+        return res.status(500).json({
+            mensaje: "No fue posible cambiar la contraseña."
+        });
+    }
+});
+
+
 // Consultar la sesión actual
 app.get("/api/auth/me", (req, res) => {
     if (!req.session.usuario) {
@@ -199,6 +506,7 @@ app.get("/api/eventos", async (req, res) => {
                 e.hora_evento,
                 e.estado,
                 e.precio,
+                e.imagen_url,
                 e.id_usuario,
                 e.id_ubicacion,
                 MIN(ec.id_categoria) AS id_categoria,
@@ -230,6 +538,7 @@ app.get("/api/eventos", async (req, res) => {
                 e.hora_evento,
                 e.estado,
                 e.precio,
+                e.imagen_url,
                 e.id_usuario,
                 e.id_ubicacion,
                 u.nombre_lugar,
@@ -250,6 +559,195 @@ app.get("/api/eventos", async (req, res) => {
         });
     }
 });
+
+
+/* =========================================
+   FAVORITOS DE CULTURAAPP
+========================================= */
+
+// Consultar los favoritos del usuario autenticado
+app.get("/api/favoritos", async (req, res) => {
+    const usuario = req.session?.usuario;
+
+    if (!usuario) {
+        return res.status(401).json({
+            mensaje: "Inicia sesión para consultar tus favoritos."
+        });
+    }
+
+    if (usuario.rol !== "Cliente") {
+        return res.status(403).json({
+            mensaje: "Esta sección está disponible para clientes."
+        });
+    }
+
+    try {
+        const [favoritos] = await db.execute(
+            `SELECT
+                e.id_evento,
+                e.nombre_evento,
+                e.descripcion_evento,
+                e.fecha_evento,
+                e.hora_evento,
+                e.precio,
+                e.imagen_url,
+                u.nombre_lugar,
+                u.direccion,
+                f.fecha_guardado
+             FROM favoritos f
+             INNER JOIN eventos e
+                ON f.id_evento = e.id_evento
+             INNER JOIN ubicaciones u
+                ON e.id_ubicacion = u.id_ubicacion
+             WHERE f.id_usuario = ?
+               AND e.estado = 'Activo'
+             ORDER BY f.fecha_guardado DESC`,
+            [usuario.id]
+        );
+
+        return res.json(favoritos);
+
+    } catch (error) {
+        console.error(
+            "Error al consultar favoritos:",
+            error.code || error.message
+        );
+
+        return res.status(500).json({
+            mensaje: "No fue posible consultar tus favoritos."
+        });
+    }
+});
+
+
+// Guardar un evento en favoritos
+app.post("/api/favoritos/:id", async (req, res) => {
+    const usuario = req.session?.usuario;
+    const idEvento = Number(req.params.id);
+
+    if (!usuario) {
+        return res.status(401).json({
+            mensaje: "Inicia sesión para guardar favoritos."
+        });
+    }
+
+    if (usuario.rol !== "Cliente") {
+        return res.status(403).json({
+            mensaje: "Esta función está disponible para clientes."
+        });
+    }
+
+    if (!Number.isInteger(idEvento) || idEvento <= 0) {
+        return res.status(400).json({
+            mensaje: "El identificador del evento no es válido."
+        });
+    }
+
+    try {
+        const [eventos] = await db.execute(
+            `SELECT id_evento
+             FROM eventos
+             WHERE id_evento = ?
+               AND estado = 'Activo'`,
+            [idEvento]
+        );
+
+        if (eventos.length === 0) {
+            return res.status(404).json({
+                mensaje: "El evento no existe o no está disponible."
+            });
+        }
+
+        const [existentes] = await db.execute(
+            `SELECT id_evento
+             FROM favoritos
+             WHERE id_usuario = ? AND id_evento = ?`,
+            [usuario.id, idEvento]
+        );
+
+        if (existentes.length > 0) {
+            return res.status(409).json({
+                mensaje: "Este evento ya está en tus favoritos."
+            });
+        }
+
+        await db.execute(
+            `INSERT INTO favoritos (id_usuario, id_evento)
+             VALUES (?, ?)`,
+            [usuario.id, idEvento]
+        );
+
+        return res.status(201).json({
+            mensaje: "Evento agregado a tus favoritos.",
+            id_evento: idEvento
+        });
+
+    } catch (error) {
+        console.error(
+            "Error al guardar favorito:",
+            error.code || error.message
+        );
+
+        return res.status(500).json({
+            mensaje: "No fue posible guardar el favorito."
+        });
+    }
+});
+
+
+// Eliminar un evento de favoritos
+app.delete("/api/favoritos/:id", async (req, res) => {
+    const usuario = req.session?.usuario;
+    const idEvento = Number(req.params.id);
+
+    if (!usuario) {
+        return res.status(401).json({
+            mensaje: "Inicia sesión para modificar tus favoritos."
+        });
+    }
+
+    if (usuario.rol !== "Cliente") {
+        return res.status(403).json({
+            mensaje: "Esta función está disponible para clientes."
+        });
+    }
+
+    if (!Number.isInteger(idEvento) || idEvento <= 0) {
+        return res.status(400).json({
+            mensaje: "El identificador del evento no es válido."
+        });
+    }
+
+    try {
+        const [resultado] = await db.execute(
+            `DELETE FROM favoritos
+             WHERE id_usuario = ? AND id_evento = ?`,
+            [usuario.id, idEvento]
+        );
+
+        if (resultado.affectedRows === 0) {
+            return res.status(404).json({
+                mensaje: "El evento no está en tus favoritos."
+            });
+        }
+
+        return res.json({
+            mensaje: "Evento eliminado de tus favoritos.",
+            id_evento: idEvento
+        });
+
+    } catch (error) {
+        console.error(
+            "Error al eliminar favorito:",
+            error.code || error.message
+        );
+
+        return res.status(500).json({
+            mensaje: "No fue posible eliminar el favorito."
+        });
+    }
+});
+
 
 // Consultar categorías disponibles para los formularios
 app.get("/api/categorias", async (req, res) => {
@@ -295,7 +793,24 @@ app.get("/api/ubicaciones", async (req, res) => {
    CREAR EVENTOS
 ========================================= */
 
-app.post("/api/eventos", async (req, res) => {
+
+app.post(
+    "/api/eventos",
+    (req, res, next) => {
+        subirImagenEvento.single("imagen")(req, res, (error) => {
+            if (!error) {
+                return next();
+            }
+
+            const mensaje = error.code === "LIMIT_FILE_SIZE"
+                ? "La imagen no puede superar los 5 MB."
+                : error.message || "No fue posible procesar la imagen.";
+
+            return res.status(400).json({ mensaje });
+        });
+    },
+    async (req, res) => {
+
     // Verificar sesión
     const usuario = req.session?.usuario;
 
@@ -321,6 +836,14 @@ app.post("/api/eventos", async (req, res) => {
         id_categoria,
         precio
     } = req.body;
+
+    if (!req.file) {
+        return res.status(400).json({
+            mensaje: "Debes seleccionar una imagen para el evento."
+        });
+    }
+
+    const imagenUrl = `/uploads/eventos/${req.file.filename}`;
 
     if (
         !nombre_evento?.trim() ||
@@ -379,7 +902,7 @@ app.post("/api/eventos", async (req, res) => {
             });
         }
 
-        const [resultado] = await conexion.execute(
+                const [resultado] = await conexion.execute(
             `INSERT INTO eventos (
                 nombre_evento,
                 descripcion_evento,
@@ -388,8 +911,9 @@ app.post("/api/eventos", async (req, res) => {
                 estado,
                 id_usuario,
                 id_ubicacion,
-                precio
-            ) VALUES (?, ?, ?, ?, 'Borrador', ?, ?, ?)`,
+                precio,
+                imagen_url
+            ) VALUES (?, ?, ?, ?, 'Borrador', ?, ?, ?, ?)`,
             [
                 nombre_evento.trim(),
                 descripcion_evento.trim(),
@@ -397,7 +921,8 @@ app.post("/api/eventos", async (req, res) => {
                 hora_evento,
                 usuario.id,
                 ubicacionId,
-                precioNumero
+                precioNumero,
+                imagenUrl
             ]
         );
 
@@ -439,7 +964,24 @@ app.post("/api/eventos", async (req, res) => {
    EDITAR EVENTOS
 ========================================= */
 
-app.put("/api/eventos/:id", async (req, res) => {
+
+app.put(
+    "/api/eventos/:id",
+    (req, res, next) => {
+        subirImagenEvento.single("imagen")(req, res, (error) => {
+            if (!error) {
+                return next();
+            }
+
+            const mensaje = error.code === "LIMIT_FILE_SIZE"
+                ? "La imagen no puede superar los 5 MB."
+                : error.message || "No fue posible procesar la imagen.";
+
+            return res.status(400).json({ mensaje });
+        });
+    },
+    async (req, res) => {
+
     const usuario = req.session?.usuario;
     const idEvento = Number(req.params.id);
 
@@ -504,7 +1046,7 @@ app.put("/api/eventos/:id", async (req, res) => {
         await conexion.beginTransaction();
 
         const [eventos] = await conexion.execute(
-            `SELECT id_usuario
+            `SELECT id_usuario, imagen_url
              FROM eventos
              WHERE id_evento = ?
              FOR UPDATE`,
@@ -553,6 +1095,7 @@ app.put("/api/eventos/:id", async (req, res) => {
             });
         }
 
+        
         await conexion.execute(
             `UPDATE eventos
              SET nombre_evento = ?,
@@ -560,7 +1103,8 @@ app.put("/api/eventos/:id", async (req, res) => {
                  fecha_evento = ?,
                  hora_evento = ?,
                  id_ubicacion = ?,
-                 precio = ?
+                 precio = ?,
+                 imagen_url = COALESCE(?, imagen_url)
              WHERE id_evento = ?`,
             [
                 nombre_evento.trim(),
@@ -569,9 +1113,11 @@ app.put("/api/eventos/:id", async (req, res) => {
                 hora_evento,
                 ubicacionId,
                 precioNumero,
+                req.file ? `/uploads/eventos/${req.file.filename}` : null,
                 idEvento
             ]
         );
+
 
         await conexion.execute(
             "DELETE FROM eventos_categorias WHERE id_evento = ?",
@@ -880,6 +1426,23 @@ app.post("/api/eventos/:id/resenas", async (req, res) => {
     ANÁLISIS DE RESEÑAS CON GEMINI
 ========================================= */
 
+
+function esErrorTemporalGemini(error) {
+    const codigo = Number(error?.status ?? error?.code);
+
+    const detalle = [
+        error?.message,
+        error?.status,
+        error?.code
+    ].join(" ");
+
+    return (
+        [429, 500, 502, 503, 504].includes(codigo) ||
+        /\b(429|500|502|503|504)\b|UNAVAILABLE|RESOURCE_EXHAUSTED|high demand|overloaded|rate limit/i.test(detalle)
+    );
+}
+
+
 app.post("/api/eventos/:id/analizar-resenas", async (req, res) => {
     const usuario = req.session?.usuario;
     const idEvento = Number(req.params.id);
@@ -953,10 +1516,16 @@ app.post("/api/eventos/:id/analizar-resenas", async (req, res) => {
             comentario: resena.comentario
         }));
 
-        // 6. Solicitar el análisis a Gemini
-        const respuesta = await genAI.models.generateContent({
-            model: "gemini-3.8-flash",
-            contents: `
+        
+        // 6. Solicitar el análisis a Gemini con reintentos controlados
+        const esperasReintento = [30_000, 60_000];
+        let respuesta;
+
+        for (let intento = 0; ; intento++) {
+            try {
+                respuesta = await genAI.models.generateContent({
+                    model: "gemini-3.6-flash",
+                    contents: `
 Analiza las siguientes reseñas de un evento cultural.
 
 Nombre del evento: ${evento.nombre_evento}
@@ -978,7 +1547,32 @@ Distingue las calificaciones numéricas de las opiniones escritas.
 No inventes información que no aparezca en las reseñas.
 Devuelve exclusivamente un objeto JSON válido.
 `
-        });
+                });
+
+                // La solicitud funcionó: salir del ciclo.
+                break;
+
+            } catch (error) {
+                // Los errores permanentes no deben reintentarse.
+                if (
+                    !esErrorTemporalGemini(error) ||
+                    intento >= esperasReintento.length
+                ) {
+                    throw error;
+                }
+
+                const esperaMs = esperasReintento[intento];
+
+                console.warn(
+                    `Gemini no está disponible. Reintento ${intento + 1} de ${esperasReintento.length} en ${esperaMs / 1000} segundos.`
+                );
+
+                await new Promise(resolve =>
+                    setTimeout(resolve, esperaMs)
+                );
+            }
+        }
+
 
         // 7. Interpretar el informe generado
         const texto = respuesta.text;
@@ -1345,6 +1939,130 @@ function verificarAdministrador(req, res, next) {
     next();
 }
 
+
+/* ==========================================
+   APROBAR Y RECHAZAR EVENTOS
+========================================== */
+
+// Aprobar un evento pendiente
+app.patch(
+    "/api/admin/eventos/:id/aprobar",
+    verificarAdministrador,
+    async (req, res) => {
+        const idEvento = Number(req.params.id);
+
+        if (!Number.isInteger(idEvento) || idEvento <= 0) {
+            return res.status(400).json({
+                mensaje: "El identificador del evento no es válido."
+            });
+        }
+
+        try {
+            const [resultado] = await db.execute(
+                `UPDATE eventos
+                 SET estado = 'Activo'
+                 WHERE id_evento = ?
+                   AND estado = 'Borrador'`,
+                [idEvento]
+            );
+
+            if (resultado.affectedRows === 0) {
+                const [eventos] = await db.execute(
+                    `SELECT estado
+                     FROM eventos
+                     WHERE id_evento = ?`,
+                    [idEvento]
+                );
+
+                if (eventos.length === 0) {
+                    return res.status(404).json({
+                        mensaje: "El evento no existe."
+                    });
+                }
+
+                return res.status(409).json({
+                    mensaje: "El evento no está pendiente de aprobación."
+                });
+            }
+
+            return res.json({
+                mensaje: "Evento aprobado correctamente.",
+                id_evento: idEvento,
+                estado: "Activo"
+            });
+        } catch (error) {
+            console.error(
+                "Error al aprobar evento:",
+                error.code || error.message
+            );
+
+            return res.status(500).json({
+                mensaje: "No fue posible aprobar el evento."
+            });
+        }
+    }
+);
+
+// Rechazar un evento pendiente
+app.patch(
+    "/api/admin/eventos/:id/rechazar",
+    verificarAdministrador,
+    async (req, res) => {
+        const idEvento = Number(req.params.id);
+
+        if (!Number.isInteger(idEvento) || idEvento <= 0) {
+            return res.status(400).json({
+                mensaje: "El identificador del evento no es válido."
+            });
+        }
+
+        try {
+            const [resultado] = await db.execute(
+                `UPDATE eventos
+                 SET estado = 'Inactivo'
+                 WHERE id_evento = ?
+                   AND estado = 'Borrador'`,
+                [idEvento]
+            );
+
+            if (resultado.affectedRows === 0) {
+                const [eventos] = await db.execute(
+                    `SELECT estado
+                     FROM eventos
+                     WHERE id_evento = ?`,
+                    [idEvento]
+                );
+
+                if (eventos.length === 0) {
+                    return res.status(404).json({
+                        mensaje: "El evento no existe."
+                    });
+                }
+
+                return res.status(409).json({
+                    mensaje: "El evento no está pendiente de aprobación."
+                });
+            }
+
+            return res.json({
+                mensaje: "Evento rechazado correctamente.",
+                id_evento: idEvento,
+                estado: "Inactivo"
+            });
+        } catch (error) {
+            console.error(
+                "Error al rechazar evento:",
+                error.code || error.message
+            );
+
+            return res.status(500).json({
+                mensaje: "No fue posible rechazar el evento."
+            });
+        }
+    }
+);
+
+
 // ==========================================
 // CONSULTAR SOLICITUDES DE ORGANIZADORES
 // ==========================================
@@ -1655,8 +2373,6 @@ app.get(
         }
     }
 );
-
-
 
 app.listen(PORT, () => {
     console.log(`CulturaApp disponible en http://localhost:${PORT}`);
