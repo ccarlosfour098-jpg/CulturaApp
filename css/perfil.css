@@ -1,0 +1,351 @@
+
+/* Contenedor del perfil */
+.perfil-usuario {
+    position: relative;
+}
+
+.perfil-boton {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+    border: 1px solid var(--borde);
+    border-radius: 14px;
+    background: var(--superficie);
+    color: var(--texto);
+    cursor: pointer;
+    font: inherit;
+    transition: background var(--transicion-tema);
+}
+
+.perfil-boton:hover {
+    background: var(--superficie-secundaria);
+}
+
+.perfil-avatar {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--color-primario-suave);
+    color: var(--color-primario-texto);
+    font-weight: 700;
+}
+
+.perfil-avatar-grande {
+    width: 48px;
+    height: 48px;
+}
+
+.perfil-identidad {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+}
+
+.perfil-identidad strong {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+}
+
+.perfil-identidad small,
+.panel-perfil-cabecera small {
+    color: var(--texto-secundario);
+    font-size: 12px;
+}
+
+.perfil-flecha {
+    transition: transform 180ms ease;
+}
+
+.perfil-usuario.abierto .perfil-flecha {
+    transform: rotate(180deg);
+}
+
+/* Panel desplegable */
+.panel-perfil {
+    position: absolute;
+    z-index: 1000;
+    top: calc(100% + 12px);
+    right: 0;
+    width: 290px;
+    padding: 16px;
+    border: 1px solid var(--borde);
+    border-radius: 18px;
+    background: var(--superficie);
+    color: var(--texto);
+    box-shadow: var(--sombra-suave);
+
+    opacity: 0;
+    transform: translateX(18px);
+    transition:
+        opacity 180ms ease,
+        transform 180ms ease;
+}
+
+.panel-perfil.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.panel-perfil-cabecera {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    overflow-wrap: anywhere;
+}
+
+.panel-perfil-cabecera > div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.panel-perfil-cabecera strong {
+    font-size: 14px;
+}
+
+.perfil-etiqueta {
+    width: fit-content;
+    padding: 4px 9px;
+    border-radius: 20px;
+    background: var(--color-primario-suave);
+    color: var(--color-primario-texto);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.panel-perfil-separador {
+    height: 1px;
+    margin: 15px 0;
+    background: var(--borde);
+}
+
+.panel-perfil-opciones {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.panel-perfil-opciones a,
+.panel-perfil-opciones button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 12px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--texto);
+    text-align: left;
+    text-decoration: none;
+    font: inherit;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.panel-perfil-opciones a:hover,
+.panel-perfil-opciones button:hover {
+    background: var(--superficie-secundaria);
+}
+
+.panel-perfil-opciones .opcion-cerrar-sesion {
+    color: var(--rojo);
+}
+
+/* Ocultar elementos de forma fiable */
+[hidden] {
+    display: none !important;
+}
+
+/* Adaptación a pantallas pequeñas */
+@media (max-width: 600px) {
+    .perfil-identidad {
+        display: none;
+    }
+
+    .perfil-boton {
+        padding: 5px;
+    }
+
+    .panel-perfil {
+        position: fixed;
+        top: 85px;
+        right: 12px;
+        width: min(290px, calc(100vw - 24px));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .panel-perfil,
+    .perfil-flecha {
+        transition: none;
+    }
+}
+
+
+/* Página Mi perfil */
+.pagina-mi-perfil {
+    padding-top: 36px;
+    padding-bottom: 60px;
+}
+
+.perfil-contenido {
+    display: grid;
+    grid-template-columns: minmax(240px, 0.8fr) minmax(300px, 1.2fr);
+    gap: 24px;
+    align-items: start;
+}
+
+.perfil-resumen,
+.formulario-perfil {
+    padding: 28px;
+    border: 1px solid var(--borde, #383242);
+    border-radius: 18px;
+    background: var(--superficie, #211e29);
+}
+
+.perfil-resumen {
+    text-align: center;
+}
+
+.perfil-resumen h2 {
+    margin: 16px 0 8px;
+}
+
+.formulario-perfil {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.formulario-perfil h2 {
+    margin: 0 0 10px;
+}
+
+.formulario-perfil input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    border: 1px solid var(--borde, #383242);
+    border-radius: 10px;
+    background: var(--fondo, #17151d);
+    color: var(--texto, #f4f0fa);
+}
+
+.formulario-perfil button {
+    padding: 12px 16px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--primario, #b49aff);
+    color: #21172e;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.formulario-perfil button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+#mensajePerfil.exito {
+    color: #6bd5a2;
+}
+
+#mensajePerfil.error {
+    color: #ff8e98;
+}
+
+@media (max-width: 760px) {
+    .perfil-contenido {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Tarjeta de identidad del usuario */
+.perfil-resumen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 12px;
+    min-height: 300px;
+    padding: 36px 28px;
+    border: 1px solid var(--borde, #383242);
+    border-radius: 20px;
+    background:
+        radial-gradient(
+            circle at top,
+            rgba(180, 154, 255, 0.12),
+            transparent 65%
+        ),
+        var(--superficie, #211e29);
+    box-sizing: border-box;
+}
+
+.perfil-resumen #avatarGrande {
+    width: 92px;
+    height: 92px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #b49aff, #7755bc);
+    color: #fff;
+    font-size: 2rem;
+    font-weight: 700;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    margin-bottom: 8px;
+}
+
+.perfil-resumen h2 {
+    margin: 0;
+    font-size: 1.55rem;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+.perfil-resumen #resumenCorreo {
+    margin: 0;
+    color: var(--texto-secundario, #bdb5ca);
+    overflow-wrap: anywhere;
+}
+
+.perfil-resumen #resumenRol {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(180, 154, 255, 0.15);
+    color: var(--texto, #f4f0fa);
+    font-size: 0.85rem;
+}
+
+.perfil-resumen #fechaRegistro {
+    margin: 0;
+    color: var(--texto-secundario, #bdb5ca);
+    font-size: 0.9rem;
+}
+
+@media (max-width: 760px) {
+    .perfil-resumen {
+        min-height: auto;
+        padding: 28px 20px;
+    }
+
+    .perfil-resumen #avatarGrande {
+        width: 78px;
+        height: 78px;
+        font-size: 1.7rem;
+    }
+}

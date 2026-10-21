@@ -1,0 +1,59 @@
+
+.pagina-favoritos {
+    min-height: 65vh;
+    padding-top: 32px;
+    padding-bottom: 48px;
+}
+
+.pagina-favoritos .presentacion {
+    margin-bottom: 32px;
+}
+
+.seccion-favoritos {
+    margin-top: 24px;
+}
+
+.mensaje-favoritos {
+    margin: 18px 0;
+    padding: 20px;
+    border: 1px solid var(--borde);
+    border-radius: 14px;
+    background: var(--superficie);
+    color: var(--texto-secundario);
+    line-height: 1.6;
+}
+
+.mensaje-favoritos[hidden] {
+    display: none;
+}
+
+#listaFavoritos {
+    margin-top: 22px;
+}
+
+#listaFavoritos .tarjeta-evento {
+    min-width: 0;
+}
+
+#listaFavoritos .pie-tarjeta {
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+#listaFavoritos .btn-favorito {
+    white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+    .pagina-favoritos {
+        padding-top: 20px;
+    }
+
+    #listaFavoritos .pie-tarjeta {
+        align-items: stretch;
+    }
+
+    #listaFavoritos .pie-tarjeta button {
+        flex: 1;
+    }
+}

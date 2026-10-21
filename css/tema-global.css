@@ -1,0 +1,207 @@
+
+/* =========================================
+   CULTURAAPP - TEMA GLOBAL
+   Compatible con modo claro y oscuro
+========================================= */
+
+html {
+    min-height: 100%;
+    background-color: var(--fondo);
+    color: var(--texto);
+}
+
+body {
+    background-color: var(--fondo);
+    color: var(--texto);
+    transition:
+        background-color var(--transicion-tema),
+        color var(--transicion-tema);
+}
+
+/* Contenedores y tarjetas */
+.panel-gestion,
+.presentacion,
+.buscador,
+.tarjeta-evento,
+.solicitud,
+.detalle-portada,
+.resenas-seccion,
+.tarjeta-resena,
+.login-tarjeta,
+.registro-tarjeta,
+.admin-stat-card,
+.admin-profile,
+.admin-table-container,
+.admin-user-filters {
+    background-color: var(--superficie);
+    color: var(--texto);
+    border-color: var(--borde);
+}
+
+/* Títulos */
+h1,
+h2,
+h3,
+h4,
+.panel-gestion h1,
+.detalle-portada h1,
+.resenas-seccion h2,
+.formulario-resena h3,
+.login-tarjeta h1 {
+    color: var(--texto);
+}
+
+/* Textos secundarios */
+p,
+label,
+small,
+.dato-evento,
+.login-descripcion,
+.login-marca small,
+.login-registro,
+.login-explorar {
+    color: var(--texto-secundario);
+}
+
+/* Formularios */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+    background-color: var(--superficie);
+    color: var(--texto);
+    border-color: var(--borde);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--texto-secundario);
+}
+
+/* Botones secundarios */
+.btn-ver,
+#btnMostrarFormulario,
+#btnCancelarFormulario,
+.acciones-evento button,
+.admin-button-secondary {
+    background-color: var(--superficie);
+    color: var(--texto);
+    border-color: var(--borde);
+}
+
+/* Enlaces */
+.volver,
+.login-enlace,
+.menu a {
+    color: var(--color-primario);
+}
+
+/* Tablas administrativas */
+.admin-table th {
+    background-color: var(--superficie-secundaria);
+    color: var(--texto);
+}
+
+.admin-table td {
+    color: var(--texto);
+    border-color: var(--borde);
+}
+
+.admin-table tbody tr:hover {
+    background-color: var(--superficie-secundaria);
+}
+
+/* Paneles adicionales */
+#panelFormularioEvento,
+#listaEventos .panel-analisis-resenas,
+.registro-organizador,
+.resumen-resenas,
+.login-nota {
+    background-color: var(--superficie-secundaria);
+    color: var(--texto);
+    border-color: var(--borde);
+}
+
+/* Tema oscuro: correcciones específicas */
+:root[data-tema="oscuro"] .login-barra {
+    background-color: var(--superficie);
+    border-color: var(--borde);
+}
+
+:root[data-tema="oscuro"] .login-pie {
+    background-color: #111019;
+    color: var(--texto);
+}
+
+:root[data-tema="oscuro"] .login-nota strong {
+    color: var(--texto);
+}
+
+:root[data-tema="oscuro"] .registro-tipo .registro-opcion {
+    background-color: var(--superficie);
+    color: var(--texto);
+    border-color: var(--borde);
+}
+
+:root[data-tema="oscuro"] .registro-tipo .registro-opcion small {
+    color: var(--texto-secundario);
+}
+
+:root[data-tema="oscuro"] .admin-layout,
+:root[data-tema="oscuro"] .admin-layout .admin-main {
+    background-color: var(--fondo);
+    color: var(--texto);
+}
+
+:root[data-tema="oscuro"] .admin-layout .admin-stat-card,
+:root[data-tema="oscuro"] .admin-layout .admin-profile,
+:root[data-tema="oscuro"] .admin-layout .admin-table-container,
+:root[data-tema="oscuro"] .admin-layout .admin-user-filters {
+    background-color: var(--superficie) !important;
+    border-color: var(--borde);
+    color: var(--texto);
+}
+
+:root[data-tema="oscuro"] .admin-layout .admin-header h1,
+:root[data-tema="oscuro"] .admin-layout .admin-section h2,
+:root[data-tema="oscuro"] .admin-layout .admin-filter-field label {
+    color: var(--texto);
+}
+
+:root[data-tema="oscuro"] .admin-layout .admin-table th {
+    background-color: var(--superficie-secundaria) !important;
+    color: var(--texto);
+}
+
+:root[data-tema="oscuro"] .admin-layout .admin-table tbody tr:hover {
+    background-color: var(--superficie-secundaria) !important;
+}
+
+/* Diálogo de confirmación administrativa */
+:root[data-tema="oscuro"] .admin-confirm-dialog {
+    background-color: var(--superficie);
+    color: var(--texto);
+    border-color: var(--borde);
+}
+
+:root[data-tema="oscuro"] .admin-confirm-content h2 {
+    color: var(--texto);
+}
+
+:root[data-tema="oscuro"] .admin-confirm-content p {
+    color: var(--texto-secundario);
+}
+
+:root[data-tema="oscuro"] .admin-confirm-actions button {
+    background-color: var(--superficie-secundaria);
+    color: var(--texto);
+    border-color: var(--borde);
+}
+
+/* Animaciones accesibles */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0.01ms !important;
+    }
+}

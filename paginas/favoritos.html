@@ -1,0 +1,183 @@
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Mis favoritos | CulturaApp Popayán</title>
+
+    <link rel="stylesheet" href="../css/variable.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/perfil.css">
+    <link rel="stylesheet" href="../css/favoritos.css">
+
+    <script src="../js/tema.js" defer></script>
+    <script src="../js/perfil.js" defer></script>
+    <script src="../js/favoritos.js" defer></script>
+</head>
+
+<body>
+
+    <header class="header">
+        <a href="../index.html" class="logo">
+            <div class="logo-icono">🏛</div>
+
+            <div class="logo-texto">
+                <h2>CulturApp Popayán</h2>
+                <p>AGENDA CULTURAL & DEPORTIVA</p>
+            </div>
+        </a>
+
+        <nav class="menu">
+            <a href="../index.html">Explorar</a>
+            <a href="favoritos.html" class="activo" aria-current="page">
+                Favoritos
+            </a>
+            <a href="gestionEventos.html" id="enlaceGestionEventos" hidden>
+                Mis eventos
+            </a>
+            <a href="administracion.html" id="enlaceGestionAdmin" hidden>
+                Administración
+            </a>
+        </nav>
+
+        
+<div class="acciones-header">
+    <button
+        type="button"
+        class="boton-tema"
+        id="botonTema"
+        aria-label="Cambiar tema">
+        ◐ Tema
+    </button>
+
+    <a href="login.html"
+       class="btn-ingresar"
+       id="enlaceIngresar">
+        Ingresar
+    </a>
+
+    <div class="perfil-usuario" id="contenedorPerfil" hidden>
+        <button
+            type="button"
+            class="perfil-boton"
+            id="botonPerfil"
+            aria-expanded="false"
+            aria-controls="panelPerfil">
+
+            <span class="perfil-avatar" id="avatarUsuario">U</span>
+
+            <span class="perfil-identidad">
+                <strong id="nombreUsuario">Mi cuenta</strong>
+                <small id="rolUsuario">Usuario</small>
+            </span>
+
+            <span class="perfil-flecha" aria-hidden="true">⌄</span>
+        </button>
+
+        <aside class="panel-perfil" id="panelPerfil" hidden>
+            <div class="panel-perfil-cabecera">
+                <span class="perfil-avatar perfil-avatar-grande"
+                      id="avatarPanel">U</span>
+
+                <div>
+                    <strong id="nombrePanel">Mi cuenta</strong>
+                    <small id="correoPanel">Cuenta de CulturaApp</small>
+                    <span class="perfil-etiqueta" id="rolPanel">Usuario</span>
+                </div>
+            </div>
+
+            <div class="panel-perfil-separador"></div>
+
+            <nav class="panel-perfil-opciones" aria-label="Opciones de perfil">
+                <a href="#" id="enlaceMiPerfil">
+                    <span aria-hidden="true">👤</span>
+                    Mi perfil
+                </a>
+
+                <a href="gestionEventos.html"
+                   id="enlaceOrganizador"
+                   hidden>
+                    <span aria-hidden="true">🎭</span>
+                    Gestión de eventos
+                </a>
+
+                <a href="administracion.html"
+                   id="enlaceAdministrador"
+                   hidden>
+                    <span aria-hidden="true">⚙️</span>
+                    Panel de administración
+                </a>
+
+                <button type="button"
+                        id="botonCerrarSesion"
+                        class="opcion-cerrar-sesion">
+                    <span aria-hidden="true">↪</span>
+                    Cerrar sesión
+                </button>
+            </nav>
+        </aside>
+    </div>
+</div>
+
+    </header>
+
+    <main class="contenedor pagina-favoritos">
+
+        <section class="presentacion">
+            <span class="etiqueta">Tu agenda personal</span>
+
+            <h1>Mis eventos favoritos</h1>
+
+            <p>
+                Encuentra aquí los eventos culturales de Popayán
+                que has guardado para no perderte ninguno.
+            </p>
+        </section>
+
+        <section class="seccion-favoritos">
+            <div class="titulo-seccion">
+                <h2>Eventos guardados</h2>
+                <p id="contadorFavoritos">Cargando favoritos...</p>
+            </div>
+
+            <div id="mensajeFavoritos" class="mensaje-favoritos" hidden></div>
+
+            <div id="listaFavoritos" class="eventos"></div>
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <p>
+            © 2026 CulturaApp Popayán. Proyecto Académico y de Fomento Cultural.
+        </p>
+    </footer>
+
+    <div
+        id="notificacionCulturApp"
+        class="notificacion-app"
+        role="status"
+        aria-live="polite"
+        hidden>
+
+        <div class="notificacion-app-icono" id="notificacionIcono">✓</div>
+
+        <div class="notificacion-app-contenido">
+            <h3 id="notificacionTitulo">Notificación</h3>
+            <p id="notificacionMensaje"></p>
+        </div>
+
+        <button
+            type="button"
+            id="cerrarNotificacion"
+            aria-label="Cerrar notificación">
+            ×
+        </button>
+    </div>
+
+</body>
+</html>

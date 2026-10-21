@@ -322,3 +322,64 @@ body.login-pagina {
                 align-items: flex-start;
             }
         }
+
+
+/* Tema oscuro para inicio de sesión */
+
+:root[data-tema="oscuro"] body.login-pagina {
+    background-color: var(--fondo);
+    background-image:
+        linear-gradient(rgba(180, 154, 247, .035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(180, 154, 247, .035) 1px, transparent 1px);
+    color: var(--texto);
+}
+
+:root[data-tema="oscuro"] .login-barra,
+:root[data-tema="oscuro"] .login-tarjeta {
+    background: var(--superficie);
+    color: var(--texto);
+    border-color: var(--borde);
+}
+
+:root[data-tema="oscuro"] .login-marca,
+:root[data-tema="oscuro"] .login-tarjeta h1,
+:root[data-tema="oscuro"] .login-formulario label {
+    color: var(--texto);
+}
+
+:root[data-tema="oscuro"] .login-marca small,
+:root[data-tema="oscuro"] .login-descripcion,
+:root[data-tema="oscuro"] .login-recordar,
+:root[data-tema="oscuro"] .login-registro,
+:root[data-tema="oscuro"] .login-explorar {
+    color: var(--texto-secundario);
+}
+
+:root[data-tema="oscuro"] .login-campo {
+    background: var(--superficie-secundaria);
+    color: var(--texto);
+    border-color: var(--borde);
+}
+
+:root[data-tema="oscuro"] .login-volver {
+    color: var(--texto);
+    border-color: var(--borde);
+}
+
+:root[data-tema="oscuro"] .login-volver:hover {
+    background: var(--superficie-secundaria);
+}
+
+:root[data-tema="oscuro"] .login-separador::before,
+:root[data-tema="oscuro"] .login-separador::after {
+    background: var(--borde);
+}
+
+:root[data-tema="oscuro"] .login-pie {
+    background: #111019;
+    color: var(--texto);
+}
+
+:root[data-tema="oscuro"] .login-pie p {
+    color: var(--texto-secundario);
+}

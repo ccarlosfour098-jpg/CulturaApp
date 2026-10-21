@@ -7,6 +7,7 @@
     <title>Administración | CulturaApp</title>
 
     <link rel="stylesheet" href="../css/variable.css">
+    <link rel="stylesheet" href="css/tema-global.css">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/responsive.css">
     <link rel="stylesheet" href="../css/administracion.css">
@@ -23,28 +24,45 @@
 
             <p class="admin-menu-title">MENÚ PRINCIPAL</p>
 
-            <nav class="admin-nav">
-                <a href="#resumen" class="admin-nav-link active">
-                    <span>▦</span>
-                    Resumen
-                </a>
+            
+<nav class="admin-nav">
+    <a href="#resumen" class="admin-nav-link active">
+        <span>▦</span>
+        Resumen
+    </a>
 
-                <a href="#solicitudes" class="admin-nav-link">
-                    <span>♧</span>
-                    Solicitudes de organizadores
-                    <span id="contadorSolicitudes" class="admin-badge">0</span>
-                </a>
+    <a href="#solicitudes" class="admin-nav-link">
+        <span>♧</span>
+        Solicitudes de organizadores
+        <span id="contadorSolicitudes" class="admin-badge">0</span>
+    </a>
 
-                <a href="#usuarios" class="admin-nav-link">
-                    <span>♙</span>
-                    Usuarios
-                </a>
+    <a href="#usuarios" class="admin-nav-link">
+        <span>☷</span>
+        Todos los usuarios
+    </a>
 
-                <a href="#eventos" class="admin-nav-link">
-                    <span>▣</span>
-                    Eventos
-                </a>
-            </nav>
+    <a href="#clientes" class="admin-nav-link">
+        <span>♙</span>
+        Clientes
+    </a>
+
+    <a href="#organizadores" class="admin-nav-link">
+        <span>♧</span>
+        Organizadores
+    </a>
+
+    <a href="#administradores" class="admin-nav-link">
+        <span>♜</span>
+        Administradores
+    </a>
+
+    <a href="#eventos" class="admin-nav-link">
+        <span>▣</span>
+        Eventos
+    </a>
+</nav>
+
 
             <button type="button" id="botonCerrarSesion"
                     class="admin-logout">
@@ -140,16 +158,148 @@
                     </table>
                 </div>
             </section>
+                
+<section id="usuarios" class="admin-section">
+    <h2>Todos los usuarios</h2>
+    <p class="admin-description">
+        Consulta y filtra todas las cuentas registradas en CulturaApp.
+    </p>
 
-            <section id="usuarios" class="admin-section">
-                <h2>Usuarios</h2>
-                <p class="admin-description">
-                    En esta sección incorporaremos la gestión de cuentas.
-                </p>
-                <div class="admin-placeholder">
-                    Gestión de usuarios próximamente.
-                </div>
-            </section>
+    <div class="admin-user-filters">
+        <div class="admin-filter-field">
+            <label for="buscarUsuario">Buscar usuario</label>
+            <input type="search" id="buscarUsuario"
+                   placeholder="Nombre o correo electrónico">
+        </div>
+
+        <div class="admin-filter-field">
+            <label for="filtroRol">Rol</label>
+            <select id="filtroRol">
+                <option value="">Todos los roles</option>
+                <option value="Cliente">Clientes</option>
+                <option value="Organizador">Organizadores</option>
+                <option value="Administrador">Administradores</option>
+            </select>
+        </div>
+
+        <div class="admin-filter-field">
+            <label for="filtroEstado">Estado de cuenta</label>
+            <select id="filtroEstado">
+                <option value="">Todos los estados</option>
+                <option value="Activo">Activo</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Inactivo">Inactivo</option>
+            </select>
+        </div>
+
+        <div class="admin-filter-field">
+            <label for="filtroSolicitud">Solicitud de organizador</label>
+            <select id="filtroSolicitud">
+                <option value="">Todos</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Aprobada">Aprobada</option>
+                <option value="Rechazada">Rechazada</option>
+                <option value="Sin solicitud">Sin solicitud</option>
+            </select>
+        </div>
+
+        <button type="button" id="botonLimpiarFiltros"
+                class="admin-button admin-button-secondary">
+            Limpiar filtros
+        </button>
+    </div>
+
+    <p id="resultadoUsuarios" class="admin-description"
+       aria-live="polite">Cargando usuarios...</p>
+
+    <div class="admin-table-container">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Correo electrónico</th>
+                    <th>Rol</th>
+                    <th>Estado de cuenta</th>
+                    <th>Solicitud</th>
+                    <th>Registro</th>
+                </tr>
+            </thead>
+            <tbody id="tablaUsuarios">
+                <tr><td colspan="6">Cargando usuarios...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section id="clientes" class="admin-section">
+    <h2>Clientes</h2>
+    <p class="admin-description">
+        Cuentas registradas con el rol Cliente.
+    </p>
+
+    <div class="admin-table-container">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Correo electrónico</th>
+                    <th>Estado de cuenta</th>
+                    <th>Fecha de registro</th>
+                </tr>
+            </thead>
+            <tbody id="tablaClientes">
+                <tr><td colspan="4">Cargando clientes...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section id="organizadores" class="admin-section">
+    <h2>Organizadores</h2>
+    <p class="admin-description">
+        Cuentas de organizadores y estado de sus solicitudes.
+    </p>
+
+    <div class="admin-table-container">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Correo electrónico</th>
+                    <th>Estado de cuenta</th>
+                    <th>Estado de solicitud</th>
+                    <th>Fecha de registro</th>
+                </tr>
+            </thead>
+            <tbody id="tablaOrganizadores">
+                <tr><td colspan="5">Cargando organizadores...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section id="administradores" class="admin-section">
+    <h2>Administradores</h2>
+    <p class="admin-description">
+        Cuentas con permisos administrativos en CulturaApp.
+    </p>
+
+    <div class="admin-table-container">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Correo electrónico</th>
+                    <th>Estado de cuenta</th>
+                    <th>Fecha de registro</th>
+                </tr>
+            </thead>
+            <tbody id="tablaAdministradores">
+                <tr><td colspan="4">Cargando administradores...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
 
             <section id="eventos" class="admin-section">
                 <h2>Eventos</h2>
@@ -168,7 +318,7 @@
 
         </main>
     </div>
-
+<script src="../js/tema.js" defer></script>
     <script src="../js/administracion.js"></script>
 </body>
 </html>

@@ -1057,3 +1057,186 @@ body:has(.admin-layout) {
 .admin-confirm-submit.rechazar:hover {
     background: #941b28;
 }
+
+
+/* ==========================================
+   GESTIÓN Y FILTROS DE USUARIOS
+========================================== */
+
+.admin-user-filters {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    align-items: end;
+    margin: 24px 0 16px;
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 3px 12px rgba(28, 47, 75, 0.04);
+}
+
+.admin-filter-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+}
+
+.admin-filter-field label {
+    color: #334155;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.admin-filter-field input,
+.admin-filter-field select {
+    width: 100%;
+    min-height: 42px;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 1px solid #dbe3ee;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #1e293b;
+    font: inherit;
+    font-size: 13px;
+}
+
+.admin-filter-field input:focus,
+.admin-filter-field select:focus {
+    outline: 2px solid #b9cce5;
+    outline-offset: 1px;
+    border-color: #1b3557;
+}
+
+#resultadoUsuarios {
+    margin: 14px 0;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.admin-status-neutral {
+    background: #edf0f5;
+    color: #475569;
+}
+
+/* Tablas de clientes, organizadores y administradores */
+
+.admin-user-table {
+    margin-top: 18px;
+}
+
+/* Adaptación de filtros a pantallas pequeñas */
+
+@media (max-width: 700px) {
+    .admin-user-filters {
+        grid-template-columns: 1fr;
+        padding: 14px;
+    }
+}
+
+
+/* =========================================
+   CULTURAAPP - TEMA OSCURO ADMINISTRATIVO
+========================================= */
+
+:root[data-tema="oscuro"] body:has(.admin-layout) {
+    background: var(--fondo);
+}
+
+:root[data-tema="oscuro"] .admin-layout,
+:root[data-tema="oscuro"] .admin-layout .admin-main {
+    background: var(--fondo);
+    color: var(--texto);
+}
+
+:root[data-tema="oscuro"] .admin-layout .admin-header h1,
+:root[data-tema="oscuro"] .admin-layout .admin-section h2 {
+    color: var(--texto);
+}
+
+:root[data-tema="oscuro"] .admin-layout .admin-eyebrow,
+:root[data-tema="oscuro"] .admin-layout .admin-description {
+    color: var(--texto-secundario);
+}
+
+:root[data-tema="oscuro"] .admin-layout .admin-stat-card,
+:root[data-tema="oscuro"] .admin-layout .admin-profile,
+:root[data-tema="oscuro"] .admin-layout .admin-table-container,
+:root[data-tema="oscuro"] .admin-layout .admin-user-filters,
+:root[data-tema="oscuro"] .admin-layout .admin-placeholder {
+    background: var(--superficie) !important;
+    color: var(--texto);
+    border-color: var(--borde);
+    box-shadow: var(--sombra-suave);
+}
+
+:root[data-tema="oscuro"] .admin-layout .admin-stat-card > span,
+:root[data-tema="oscuro"] .admin-layout .admin-stat-card small,
+:root[data-tema="oscuro"] .admin-layout .admin-profile span,
+:root[data-tema="oscuro"] .admin-layout .admin-filter-field label,
+:root[data-tema="oscuro"] #resultadoUsuarios {
+    color: var(--texto-secundario);
+}
+
+:root[data-tema="oscuro"] .admin-layout .admin-stat-card strong {
+    color: var(--color-primario);
+}
+
+:root[data-tema="oscuro"] .admin-layout .admin-table th {
+    background: var(--superficie-secundaria) !important;
+    color: var(--texto);
+    border-color: var(--borde);
+}
+
+:root[data-tema="oscuro"] .admin-layout .admin-table td {
+    background: var(--superficie);
+    color: var(--texto);
+    border-color: var(--borde);
+}
+
+:root[data-tema="oscuro"] .admin-layout .admin-table tbody tr:hover,
+:root[data-tema="oscuro"] .admin-layout .admin-button-secondary:hover {
+    background: var(--superficie-secundaria) !important;
+}
+
+:root[data-tema="oscuro"] .admin-layout .admin-filter-field input,
+:root[data-tema="oscuro"] .admin-layout .admin-filter-field select {
+    background: var(--superficie-secundaria);
+    color: var(--texto);
+    border-color: var(--borde);
+}
+
+:root[data-tema="oscuro"] .admin-layout .admin-button-secondary {
+    background: var(--superficie);
+    color: var(--texto);
+    border-color: var(--borde);
+}
+
+/* Diálogos administrativos */
+:root[data-tema="oscuro"] .admin-confirm-dialog {
+    background: var(--superficie);
+    color: var(--texto);
+    border-color: var(--borde);
+}
+
+:root[data-tema="oscuro"] .admin-confirm-content h2 {
+    color: var(--texto);
+}
+
+:root[data-tema="oscuro"] .admin-confirm-content p {
+    color: var(--texto-secundario);
+}
+
+:root[data-tema="oscuro"] .admin-confirm-cancel {
+    background: var(--superficie-secundaria);
+    color: var(--texto);
+    border-color: var(--borde);
+}
+
+/* Se conserva la identidad oscura de la barra lateral */
+:root[data-tema="oscuro"] .admin-layout .admin-sidebar {
+    background: #171326 !important;
+    color: #f3f0fa;
+}

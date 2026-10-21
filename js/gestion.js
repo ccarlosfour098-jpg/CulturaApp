@@ -160,6 +160,143 @@ document.addEventListener("DOMContentLoaded", () => {
         }).format(valor);
     }
 
+
+    // Datos del último informe generado por Gemini.
+    let datosAnalisisActual = null;
+
+    // Descarga el informe como un archivo HTML.
+    function descargarInformeHTML(datos) {
+        if (!datos || !datos.informe) {
+            alert("No hay un informe disponible para descargar.");
+            return;
+        }
+
+        const informe = datos.informe;
+
+        
+
+        const crearListaInforme = (elementos) => {
+            if (!Array.isArray(elementos) || elementos.length === 0) {
+                return "<li>No se identificaron elementos.</li>";
+            }
+
+            return elementos
+                .map(item => `<li>${escaparHTML(item)}</li>`)
+                .join("");
+        };
+
+        const nombreEvento = escaparHTML(
+            datos.evento?.nombre_evento ||
+            datos.evento?.nombre ||
+            "Evento cultural"
+        );
+
+        const fechaGeneracion = new Date().toLocaleString("es-CO");
+
+        const contenidoHTML = `<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe de reseñas - ${nombreEvento}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 850px;
+            margin: 40px auto;
+            padding: 0 24px;
+            color: #222;
+            line-height: 1.6;
+        }
+        h1, h2 { color: #243447; }
+        .cabecera {
+            border-bottom: 3px solid #243447;
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+        .indicadores {
+            background: #f2f4f7;
+            padding: 16px;
+            border-radius: 8px;
+        }
+        .nota {
+            margin-top: 30px;
+            color: #666;
+            font-size: 13px;
+            border-top: 1px solid #ddd;
+            padding-top: 12px;
+        }
+        @media print {
+            body { margin: 15mm auto; }
+        }
+    </style>
+</head>
+<body>
+    <header class="cabecera">
+        <h1>Informe de análisis de reseñas</h1>
+        <h2>${nombreEvento}</h2>
+        <p>Generado el: ${escaparHTML(fechaGeneracion)}</p>
+    </header>
+
+    <section class="indicadores">
+        <p><strong>Reseñas analizadas:</strong>
+            ${Number(datos.total_resenas) || 0}</p>
+        <p><strong>Percepción estimada:</strong>
+            ${Number(informe.puntuacion_percepcion) || 0}/10</p>
+        <p><strong>Sentimiento general:</strong>
+            ${escaparHTML(informe.sentimiento_general || "No disponible")}</p>
+    </section>
+
+    <h2>Fortalezas</h2>
+    <ul>${crearListaInforme(informe.fortalezas)}</ul>
+
+    <h2>Oportunidades de mejora</h2>
+    <ul>${crearListaInforme(informe.mejoras)}</ul>
+
+    <h2>Recomendaciones</h2>
+    <ul>${crearListaInforme(informe.recomendaciones)}</ul>
+
+    <h2>Resumen</h2>
+    <p>${escaparHTML(informe.resumen || "Sin resumen disponible")}</p>
+
+    <footer class="nota">
+        Resultado orientativo generado por inteligencia artificial
+        a partir de las reseñas del evento. No sustituye una evaluación
+        humana.
+    </footer>
+</body>
+</html>`;
+
+        const archivo = new Blob(
+            [contenidoHTML],
+            { type: "text/html;charset=utf-8" }
+        );
+
+        const url = URL.createObjectURL(archivo);
+        const enlace = document.createElement("a");
+
+        const nombreArchivo = String(
+            datos.evento?.nombre_evento ||
+            datos.evento?.nombre ||
+            "evento"
+        )
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-zA-Z0-9_-]+/g, "_")
+            .replace(/^_+|_+$/g, "")
+            .slice(0, 60);
+
+        enlace.href = url;
+        enlace.download = `Informe_resenas_${nombreArchivo || "evento"}.html`;
+
+        document.body.appendChild(enlace);
+        enlace.click();
+        enlace.remove();
+
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+
 // Eventos consultados desde MySQL
 let eventosCargados = [];
 
@@ -250,6 +387,24 @@ let idEventoEditando = null;
     <button type="button" class="btn-editar" data-id="${idEvento}">
         Editar
     </button>
+
+    ${evento.estado === "Borrador" ? `
+    <button
+        type="button"
+        class="btn-aprobar-evento"
+        data-id="${idEvento}"
+    >
+        Aprobar evento
+    </button>
+
+    <button
+        type="button"
+        class="btn-rechazar-evento"
+        data-id="${idEvento}"
+    >
+        Rechazar evento
+    </button>
+` : ""}
 
     <button type="button" class="btn-cancelar-evento" data-id="${idEvento}">
         Cancelar evento
@@ -354,26 +509,91 @@ let idEventoEditando = null;
     const selectUbicacion = document.getElementById("ubicacionEvento");
     const selectCategoria = document.getElementById("categoriaEvento");
     const mensajeFormulario = document.getElementById("mensajeFormularioEvento");
+        
+    const inputImagen = document.getElementById("imagenEvento");
+    const vistaPreviaImagen = document.getElementById("vistaPreviaImagen");
+    const imagenSeleccionada = document.getElementById("imagenSeleccionada");
 
-    // Mostrar formulario
-    btnMostrar?.addEventListener("click", async () => {
-        panel.hidden = false;
-        panel.scrollIntoView({ behavior: "smooth", block: "start" });
+let urlVistaPrevia = null;
 
-        await cargarOpciones(
-            "/api/ubicaciones",
-            selectUbicacion,
-            "id_ubicacion",
-            "nombre_lugar"
-        );
 
-        await cargarOpciones(
-            "/api/categorias",
-            selectCategoria,
-            "id_categoria",
-            "nombre_categoria"
-        );
-    });
+inputImagen?.addEventListener("change", () => {
+    if (urlVistaPrevia) {
+        URL.revokeObjectURL(urlVistaPrevia);
+        urlVistaPrevia = null;
+    }
+
+    const archivo = inputImagen.files?.[0];
+
+    if (!archivo) {
+        return;
+    }
+
+    const tiposPermitidos = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
+
+    if (!tiposPermitidos.includes(archivo.type)) {
+        inputImagen.value = "";
+        mensajeFormulario.textContent =
+            "Selecciona una imagen JPG, PNG o WebP.";
+        return;
+    }
+
+    if (archivo.size > 5 * 1024 * 1024) {
+        inputImagen.value = "";
+        mensajeFormulario.textContent =
+            "La imagen no puede superar los 5 MB.";
+        return;
+    }
+
+    urlVistaPrevia = URL.createObjectURL(archivo);
+    imagenSeleccionada.src = urlVistaPrevia;
+    vistaPreviaImagen.hidden = false;
+    mensajeFormulario.textContent = "";
+});
+    
+ // Mostrar formulario para crear un evento nuevo
+btnMostrar?.addEventListener("click", async () => {
+    idEventoEditando = null;
+    formulario.reset();
+
+    
+inputImagen.required = true;
+
+if (urlVistaPrevia) {
+    URL.revokeObjectURL(urlVistaPrevia);
+    urlVistaPrevia = null;
+}
+
+vistaPreviaImagen.hidden = true;
+imagenSeleccionada.removeAttribute("src");
+mensajeFormulario.textContent = "";
+
+    formulario.querySelector(
+        'button[type="submit"]'
+    ).textContent = "Guardar evento";
+
+    panel.hidden = false;
+    panel.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    await cargarOpciones(
+        "/api/ubicaciones",
+        selectUbicacion,
+        "id_ubicacion",
+        "nombre_lugar"
+    );
+
+    await cargarOpciones(
+        "/api/categorias",
+        selectCategoria,
+        "id_categoria",
+        "nombre_categoria"
+    );
+});
+
 
     // Cargar opciones de ubicación y categoría desde el servidor
     async function cargarOpciones(url, select, campoId, campoNombre) {
@@ -407,11 +627,28 @@ let idEventoEditando = null;
     }
 
     // Cancelar formulario
-    btnCancelar?.addEventListener("click", () => {
-        panel.hidden = true;
-        formulario.reset();
-        mensajeFormulario.textContent = "";
-    });
+    
+btnCancelar?.addEventListener("click", () => {
+    panel.hidden = true;
+    formulario.reset();
+
+    idEventoEditando = null;
+    inputImagen.required = true;
+
+    if (urlVistaPrevia) {
+        URL.revokeObjectURL(urlVistaPrevia);
+        urlVistaPrevia = null;
+    }
+
+    imagenSeleccionada.removeAttribute("src");
+    vistaPreviaImagen.hidden = true;
+    mensajeFormulario.textContent = "";
+
+    formulario.querySelector(
+        'button[type="submit"]'
+    ).textContent = "Guardar evento";
+});
+
 
     // Guardar evento
     formulario?.addEventListener("submit", async (evento) => {
@@ -425,15 +662,9 @@ let idEventoEditando = null;
 
         botonGuardar.disabled = true;
 
-        const datos = {
-            nombre_evento: document.getElementById("nombreEvento").value.trim(),
-            descripcion_evento: document.getElementById("descripcionEvento").value.trim(),
-            fecha_evento: document.getElementById("fechaEvento").value,
-            hora_evento: document.getElementById("horaEvento").value,
-            id_ubicacion: selectUbicacion.value,
-            id_categoria: selectCategoria.value,
-            precio: document.getElementById("precioEvento").value
-        };
+        
+        const datos = new FormData(formulario);
+
 
         try {
             
@@ -443,37 +674,45 @@ let idEventoEditando = null;
 
             const metodo = idEventoEditando ? "PUT" : "POST";
 
-            const respuesta = await fetch(url, {
-                method: metodo,
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                credentials: "same-origin",
-                body: JSON.stringify(datos)
-            });
+            
+const respuesta = await fetch(url, {
+    method: metodo,
+    credentials: "same-origin",
+    body: datos
+});
 
 
             const resultado = await respuesta.json();
 
             if (!respuesta.ok) {
                 throw new Error(
-                    resultado.mensaje || "No se pudo crear el evento."
+                    resultado.mensaje || "No se pudo guardar el evento."
                 );
             }
 
-            mensajeFormulario.style.color = "#087443";
-            mensajeFormulario.textContent =
-                `${resultado.mensaje} Código: ${resultado.id_evento}`;
+            
 
-                        formulario.reset();
+mensajeFormulario.style.color = "#087443";
+mensajeFormulario.textContent =
+    `${resultado.mensaje} Código: ${resultado.id_evento}`;
 
-            idEventoEditando = null;
+formulario.reset();
+idEventoEditando = null;
+inputImagen.required = true;
 
-            formulario.querySelector(
-                'button[type="submit"]'
-            ).textContent = "Guardar evento";
+if (urlVistaPrevia) {
+    URL.revokeObjectURL(urlVistaPrevia);
+    urlVistaPrevia = null;
+}
 
-            await cargarEventos();
+imagenSeleccionada.removeAttribute("src");
+vistaPreviaImagen.hidden = true;
+
+formulario.querySelector(
+    'button[type="submit"]'
+).textContent = "Guardar evento";
+
+await cargarEventos();
 
         } catch (error) {
             mensajeFormulario.style.color = "#b42318";
@@ -491,7 +730,8 @@ let idEventoEditando = null;
 
         const botonAnalizar =
     evento.target.closest(".btn-analizar-resenas");
-        
+        const botonAprobar = evento.target.closest(".btn-aprobar-evento");
+        const botonRechazar = evento.target.closest(".btn-rechazar-evento");
         if (botonAnalizar) {
             const id = Number(botonAnalizar.dataset.id);
             const datosEvento = eventosCargados.find(
@@ -507,7 +747,7 @@ let idEventoEditando = null;
             tituloModal.textContent = "Análisis de reseñas";
             subtituloModal.textContent = datosEvento.nombre_evento;
             contenidoModal.textContent =
-                "Gemini está analizando las reseñas. Espera un momento...";
+                "Gemini está analizando las reseñas. Si el servicio está ocupado, puede tardar hasta unos minutos. No cierres esta ventana.";
 
             botonAnalizar.disabled = true;
             botonAnalizar.textContent = "Analizando...";
@@ -535,6 +775,12 @@ let idEventoEditando = null;
                 }
 
                 const informe = datos.informe;
+
+                datosAnalisisActual = datos;
+
+                datosAnalisisActual.evento = {
+    nombre_evento: datosEvento.nombre_evento
+};
 
                 const crearLista = (elementos) => {
                     if (!Array.isArray(elementos) || elementos.length === 0) {
@@ -579,7 +825,22 @@ let idEventoEditando = null;
                     <p><small>
                         Resultado orientativo generado por IA a partir de las reseñas.
                     </small></p>
+                    <button
+    type="button"
+    id="btnDescargarInforme"
+>
+    Descargar informe
+</button>
                 `;
+
+                const btnDescargarInforme = document.getElementById(
+    "btnDescargarInforme"
+);
+
+btnDescargarInforme?.addEventListener("click", () => {
+    descargarInformeHTML(datosAnalisisActual);
+});
+
             } catch (error) {
                 console.error("Error al analizar reseñas:", error);
 
@@ -593,6 +854,58 @@ let idEventoEditando = null;
 
             return;
         }
+        
+if (botonAprobar || botonRechazar) {
+    const boton = botonAprobar || botonRechazar;
+    const id = Number(boton.dataset.id);
+
+    const accion = botonAprobar ? "aprobar" : "rechazar";
+    const confirmacion = botonAprobar
+        ? "¿Deseas aprobar este evento?"
+        : "¿Deseas rechazar este evento?";
+
+    if (!Number.isInteger(id) || id <= 0) {
+        alert("El identificador del evento no es válido.");
+        return;
+    }
+
+    if (!confirm(confirmacion)) {
+        return;
+    }
+
+    try {
+        boton.disabled = true;
+
+        const respuesta = await fetch(
+            `/api/admin/eventos/${id}/${accion}`,
+            {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }
+        );
+
+        const resultado = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(
+                resultado.mensaje || "No fue posible actualizar el evento."
+            );
+        }
+
+        alert(resultado.mensaje);
+
+        await cargarEventos();
+    } catch (error) {
+        console.error("Error al gestionar el evento:", error);
+        alert(error.message || "Ocurrió un error al gestionar el evento.");
+    } finally {
+        boton.disabled = false;
+    }
+
+    return;
+}
 
         if (botonEditar) {
             const id = Number(botonEditar.dataset.id);
@@ -607,6 +920,23 @@ let idEventoEditando = null;
             }
 
             idEventoEditando = id;
+
+            // La imagen es opcional durante la edición
+inputImagen.required = false;
+
+// Mostrar la imagen que ya tiene el evento
+if (urlVistaPrevia) {
+    URL.revokeObjectURL(urlVistaPrevia);
+    urlVistaPrevia = null;
+}
+
+if (datosEvento.imagen_url) {
+    imagenSeleccionada.src = datosEvento.imagen_url;
+    vistaPreviaImagen.hidden = false;
+} else {
+    imagenSeleccionada.removeAttribute("src");
+    vistaPreviaImagen.hidden = true;
+}
 
             panel.hidden = false;
             panel.scrollIntoView({

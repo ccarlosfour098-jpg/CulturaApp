@@ -47,25 +47,22 @@ document.addEventListener("DOMContentLoaded", () => {
                     `¡Bienvenido, ${datos.usuario.nombre}!`;
 
                 
-const destinos = {
-    Cliente: "../index.html",
-    Organizador: "gestionEventos.html",
-    Administrador: "administracion.html"
-};
 
+const rolesPermitidos = [
+    "Cliente",
+    "Organizador",
+    "Administrador"
+];
 
-                const destino = destinos[datos.usuario.rol];
-
-                if (!destino) {
-                    mensaje.style.color = "#b42318";
-                    mensaje.textContent =
-                        "El rol de la cuenta no es reconocido.";
-                    return;
-                }
-
-                window.setTimeout(() => {
-                    window.location.href = destino;
-                }, 700);
+if (!rolesPermitidos.includes(datos.usuario.rol)) {
+    mensaje.style.color = "#b42318";
+    mensaje.textContent =
+        "El rol de la cuenta no es reconocido.";
+    return;
+}
+    window.setTimeout(() => {
+    window.location.href = "../index.html";
+}, 700);
 
             } catch (error) {
                 console.error("Error en login:", error);

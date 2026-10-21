@@ -200,3 +200,63 @@
         width: 100%;
     }
 }
+
+/* =========================================
+   CULTURAAPP - TEMA OSCURO DE DETALLES
+========================================= */
+
+:root[data-tema="oscuro"] .detalle-portada,
+:root[data-tema="oscuro"] .resenas-seccion,
+:root[data-tema="oscuro"] .tarjeta-resena {
+    background: var(--superficie);
+    color: var(--texto);
+    border-color: var(--borde);
+    box-shadow: var(--sombra-suave);
+}
+
+:root[data-tema="oscuro"] .detalle-portada h1,
+:root[data-tema="oscuro"] .resenas-seccion h2,
+:root[data-tema="oscuro"] .tarjeta-resena h4,
+:root[data-tema="oscuro"] .formulario-resena h3 {
+    color: var(--texto);
+}
+
+:root[data-tema="oscuro"] .detalle-portada .dato-evento,
+:root[data-tema="oscuro"] #descripcionEvento,
+:root[data-tema="oscuro"] #totalResenas,
+:root[data-tema="oscuro"] .tarjeta-resena p,
+:root[data-tema="oscuro"] .tarjeta-resena small,
+:root[data-tema="oscuro"] .formulario-resena label {
+    color: var(--texto-secundario);
+}
+
+:root[data-tema="oscuro"] .resumen-resenas {
+    background: var(--superficie-secundaria);
+    color: var(--texto);
+}
+
+:root[data-tema="oscuro"] #promedioResenas {
+    color: var(--texto);
+}
+
+:root[data-tema="oscuro"] .formulario-resena {
+    border-top-color: var(--borde);
+}
+
+:root[data-tema="oscuro"] .formulario-resena select,
+:root[data-tema="oscuro"] .formulario-resena textarea {
+    background: var(--superficie-secundaria);
+    color: var(--texto);
+    border-color: var(--borde);
+}
+
+:root[data-tema="oscuro"] .formulario-resena select:focus,
+:root[data-tema="oscuro"] .formulario-resena textarea:focus {
+    outline-color: var(--color-primario);
+    border-color: var(--color-primario);
+}
+
+:root[data-tema="oscuro"] .precio-evento {
+    background: #203d31;
+    color: #a4efc6;
+}

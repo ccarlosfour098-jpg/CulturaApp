@@ -190,3 +190,34 @@
     line-height: 1.5;
     font-weight: 400;
 }
+
+/* Tema oscuro para registro */
+
+:root[data-tema="oscuro"] .registro-formulario label,
+:root[data-tema="oscuro"] .registro-organizador label,
+:root[data-tema="oscuro"] .registro-tipo h2,
+:root[data-tema="oscuro"] .registro-organizador h2 {
+    color: var(--texto);
+}
+
+:root[data-tema="oscuro"] .registro-formulario input,
+:root[data-tema="oscuro"] .registro-organizador input,
+:root[data-tema="oscuro"] .registro-organizador select,
+:root[data-tema="oscuro"] .registro-organizador textarea {
+    background: var(--superficie-secundaria);
+    color: var(--texto);
+    border-color: var(--borde);
+}
+
+:root[data-tema="oscuro"] .registro-tipo .registro-opcion,
+:root[data-tema="oscuro"] .registro-organizador {
+    background: var(--superficie);
+    color: var(--texto);
+    border-color: var(--borde);
+}
+
+:root[data-tema="oscuro"] .registro-tipo .registro-opcion small,
+:root[data-tema="oscuro"] .registro-tipo > p,
+:root[data-tema="oscuro"] .registro-organizador > p {
+    color: var(--texto-secundario);
+}

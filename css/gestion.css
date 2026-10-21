@@ -498,3 +498,56 @@
         animation: none;
     }
 }
+
+/* =========================================
+   TEMA OSCURO - GESTIÓN DE EVENTOS
+========================================= */
+
+:root[data-tema="oscuro"] #panelFormularioEvento,
+:root[data-tema="oscuro"] #listaEventos .solicitud,
+:root[data-tema="oscuro"] #listaEventos .panel-analisis-resenas {
+    background: var(--superficie);
+    color: var(--texto);
+    border-color: var(--borde);
+}
+
+:root[data-tema="oscuro"] #panelFormularioEvento h2,
+:root[data-tema="oscuro"] #listaEventos .solicitud h3,
+:root[data-tema="oscuro"] #listaEventos .panel-analisis-resenas h3,
+:root[data-tema="oscuro"] #listaEventos .panel-analisis-resenas h4 {
+    color: var(--texto);
+}
+
+:root[data-tema="oscuro"] #panelFormularioEvento > p,
+:root[data-tema="oscuro"] #formularioEvento label,
+:root[data-tema="oscuro"] #listaEventos .solicitud p,
+:root[data-tema="oscuro"] #listaEventos .panel-analisis-resenas li {
+    color: var(--texto-secundario);
+}
+
+:root[data-tema="oscuro"] #formularioEvento input,
+:root[data-tema="oscuro"] #formularioEvento textarea,
+:root[data-tema="oscuro"] #formularioEvento select {
+    background: var(--superficie-secundaria);
+    color: var(--texto);
+    border-color: var(--borde);
+}
+
+:root[data-tema="oscuro"] #btnMostrarFormulario,
+:root[data-tema="oscuro"] #btnCancelarFormulario,
+:root[data-tema="oscuro"] #listaEventos .acciones-evento button:not(.btn-analizar-resenas) {
+    background: var(--superficie-secundaria);
+    color: var(--texto);
+    border-color: var(--borde);
+}
+
+:root[data-tema="oscuro"] #listaEventos .acciones-evento .btn-analizar-resenas,
+:root[data-tema="oscuro"] #formularioEvento button[type="submit"] {
+    background: var(--color-primario);
+    color: #20172f;
+    border-color: var(--color-primario);
+}
+
+:root[data-tema="oscuro"] #listaEventos .panel-analisis-resenas p small {
+    color: var(--texto-secundario);
+}
